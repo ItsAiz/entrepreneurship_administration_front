@@ -33,7 +33,7 @@ export default function Toolbar() {
     },
     {
       label: (
-        <Link to="/login">
+        <Link to="/register">
           <Button
             label="Registrarse"
             severity="warning"

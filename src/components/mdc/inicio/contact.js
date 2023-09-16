@@ -6,7 +6,7 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { Button } from "primereact/button";
 import { FaFacebook, FaInstagram, FaGlobe } from "react-icons/fa";
 import { Toast } from "primereact/toast";
-/*import Footer from "../footer";*/
+
 export default function Events() {
   const [formData, setFormData] = useState({
     nombre: "",
@@ -171,7 +171,6 @@ export default function Events() {
         </div>
       </div>
       <br></br>
-
     </div>
   );
 }
