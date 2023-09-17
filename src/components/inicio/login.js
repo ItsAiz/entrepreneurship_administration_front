@@ -1,13 +1,10 @@
-import React, { useState, useRef, useEffect } from "react";
-import Toolbar from "../toolbar";
+import React, { useState, useRef } from "react";
 import { InputText } from "primereact/inputtext";
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
-import { Dropdown } from "primereact/dropdown";
-import { TreeSelect } from "primereact/treeselect";
 
-export default function Register() {
+export default function Login() {
   const [value, setValue] = useState("");
 
   const [formData, setFormData] = useState({
@@ -72,65 +69,34 @@ export default function Register() {
     }
     showSticky(notificationData);
   };
-  const [nodes] = useState(null);
-  const [selectedNodeKey, setSelectedNodeKey] = useState(null);
 
-  useEffect(() => {}, []);
   return (
+    <>
     <div
-      className="card flex flex-column md:flex-row gap-3"
-      style={{
-        background: "#fff54d",
-      }}
-    >
-      <Toolbar />
-
-      <div
         className="card flex justify-content-center"
         style={{
           marginTop: "5%",
-          marginLeft: "20%",
-          marginRight: "20%",
-          
+          marginLeft: "30%",
+          marginRight: "30%",
         }}
       >
         <Toast ref={toast} />
 
         <div className="col s6">
           <Card
-            title="Registro"
+            title="Inicio de sesión"
             style={{
               textAlign: "center",
             }}
           >
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} autocomplete="off">
               <span className="p-float-label">
                 <InputText
                   id="username"
                   value={value}
                   onChange={(e) => setValue(e.target.value)}
                 />
-                <label htmlFor="username">Nombre</label>
-              </span>
-              <br></br>
-
-              <div className="input-field col s6">
-                <TreeSelect
-                  value={selectedNodeKey}
-                  onChange={(e) => setSelectedNodeKey(e.value)}
-                  options={nodes}
-                  style={{ width: "100%" }}
-                  placeholder="Carrera"
-                ></TreeSelect>
-              </div>
-              <br></br>
-              <span className="p-float-label">
-                <InputText
-                  id="username"
-                  value={value}
-                  onChange={(e) => setValue(e.target.value)}
-                />
-                <label htmlFor="username">Correo electrónico</label>
+                <label htmlFor="username">Usuario</label>
               </span>
               <br></br>
               <span className="p-float-label">
@@ -139,16 +105,28 @@ export default function Register() {
                   value={value}
                   type="password"
                   onChange={(e) => setValue(e.target.value)}
+                  autocomplete="off"
                 />
                 <label htmlFor="username">Contraseña</label>
               </span>
               <br></br>
+
               <Button
-                label="Registrarme"
+                label="Iniciar Sesión Administrador"
                 severity="info"
                 className="p-button-sm"
                 style={{
                   marginTop: "20px",
+                }}
+              />
+
+              <Button
+                label="Iniciar Sesión Usuario"
+                severity="info"
+                className="p-button-sm"
+                style={{
+                  marginTop: "20px",
+                  marginLeft: "20px",
                 }}
               />
             </form>
@@ -157,6 +135,6 @@ export default function Register() {
       </div>
 
       <br></br>
-    </div>
+    </>
   );
 }

@@ -1,19 +1,11 @@
 import React from "react";
-import Toolbar from "../toolbar";
 
 import { Card } from "primereact/card";
 
 export default function Index() {
   return (
+    <>
     <div
-      className="card flex flex-column md:flex-row gap-3"
-      style={{
-        background: "#fff54d",
-      }}
-    >
-      <Toolbar />
-
-      <div
         className="card flex justify-content-center"
         style={{
           marginTop: "5%",
@@ -38,6 +30,6 @@ export default function Index() {
         </div>
       </div>
       <br></br>
-    </div>
+      </>
   );
 }

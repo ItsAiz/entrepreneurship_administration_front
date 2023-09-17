@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Toolbar from "../toolbar";
 import { InputText } from "primereact/inputtext";
 import { Card } from "primereact/card";
 import { InputTextarea } from "primereact/inputtextarea";
@@ -47,14 +46,8 @@ export default function Contact() {
   };
 
   return (
+    <>
     <div
-      className="card flex flex-column md:flex-row gap-3"
-      style={{
-        background: "#fff54d",
-      }}
-    >
-      <Toolbar />
-      <div
         className="card flex justify-content-center"
         style={{
           marginTop: "5%",
@@ -122,6 +115,6 @@ export default function Contact() {
         </div>
       </div>
       <br></br>
-    </div>
+    </>
   );
 }

@@ -4,7 +4,7 @@ import { Button } from "primereact/button";
 import { TabMenu } from "primereact/tabmenu";
 import { Link } from "react-router-dom";
 
-export default function Toolbar() {
+const Toolbar = () => {
   const items = [
     {
       label: (
@@ -45,7 +45,7 @@ export default function Toolbar() {
   ];
 
   return (
-    <div className="card">
+    <div className={'card'}>
       <TabMenu
         model={items.map((item) => ({
           label: (
@@ -64,3 +64,5 @@ export default function Toolbar() {
     </div>
   );
 }
+
+export default Toolbar;
