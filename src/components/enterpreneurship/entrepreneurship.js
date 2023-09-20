@@ -24,8 +24,8 @@ const EnterpreneurshipManangement = () => {
   useEffect(() => {
     const fetchEnterpreneurs = async () => {
       try {
-        const enterpreneurshipData = await EnterpreneurshipApi.getEnterpreneurships();
-        setEnterpreneurships(enterpreneurshipData);
+        const resp = await EnterpreneurshipApi.getEnterpreneurships();
+        setEnterpreneurships(resp.data);
       } catch (error) {
         showSticky({
           severity: "error",
@@ -42,21 +42,26 @@ const EnterpreneurshipManangement = () => {
     setIsModalOpen(true);
   };
 
-  const handleDelete = async (enterpreneurshipData) => {
-    try {
-      const resp = await EnterpreneurshipApi.deleteEnterpreneurship(enterpreneurshipData.id);
+  const handleDelete = async (id) => {
+    await EnterpreneurshipApi.deleteEnterpreneurship(id)
+    .then((resp) => {
+      setEnterpreneurships((prevData) =>
+        prevData.filter((item) => item._id !== id)
+      );
       showSticky({
-          severity: "success",
-          summary: "Success",
-          detail: resp,
+        severity: "success",
+        summary: "Success",
+        detail: resp.state,
       });
-  } catch (error) {
+
+    })
+    .catch((err) => {
       showSticky({
-          severity: "error",
-          summary: "Error",
-          detail: "Hubo un error en la solicitud: " + error.message,
+        severity: "error",
+        summary: "Error",
+        detail: "Hubo un error en la solicitud: " + err.message,
       });
-  }
+    });
   };
 
   const renderActions = (rowData) => {
@@ -73,7 +78,7 @@ const EnterpreneurshipManangement = () => {
           label="Delete"
           icon="pi pi-trash"
           className="p-button-sm p-button-danger"
-          onClick={() => handleDelete(rowData)}
+          onClick={() => handleDelete(rowData._id)}
         />
       </div>
     );
@@ -84,10 +89,10 @@ const EnterpreneurshipManangement = () => {
       <Toast ref={toast} />
       {Array.isArray(enterpreneurships) && enterpreneurships.length > 0 ? (
         <DataTable value={enterpreneurships}>
-          <Column field={'code'} header={'Código'} />
-          <Column field={'name'} header={'Nombre'} />
           <Column field={'category'} header={'Categoría'} />
-          <Column field={'quantity'} header={'Cantidad'} />
+          <Column field={'name'} header={'Nombre'} />
+          <Column field={'id_user.name'} header={'Cantidad'} />
+          <Column field={'plan_status'} header={'Estado'} />
           <Column
             body={renderActions}
             header={'Acciones'}
