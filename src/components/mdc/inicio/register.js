@@ -4,13 +4,12 @@ import { InputText } from "primereact/inputtext";
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
-import { Dropdown } from "primereact/dropdown";
 import { TreeSelect } from "primereact/treeselect";
 
 export default function Register() {
-  const [value, setValue] = useState("");
+  const [setValue] = useState("");
 
-  const [formData, setFormData] = useState({
+  const [formData] = useState({
     nombre: "",
     correo: "",
     comentario: "",
@@ -25,15 +24,7 @@ export default function Register() {
       life: 2000,
     });
   };
-  const { nombre, correo, comentario } = formData;
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
+  const { name, career, user, password } = formData;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -73,7 +64,7 @@ export default function Register() {
     showSticky(notificationData);
   };
   const [nodes] = useState(null);
-  const [selectedNodeKey, setSelectedNodeKey] = useState(null);
+  const [setSelectedNodeKey] = useState(null);
 
   useEffect(() => {}, []);
   return (
@@ -91,7 +82,6 @@ export default function Register() {
           marginTop: "5%",
           marginLeft: "20%",
           marginRight: "20%",
-          
         }}
       >
         <Toast ref={toast} />
@@ -107,7 +97,7 @@ export default function Register() {
               <span className="p-float-label">
                 <InputText
                   id="username"
-                  value={value}
+                  value={name}
                   onChange={(e) => setValue(e.target.value)}
                 />
                 <label htmlFor="username">Nombre</label>
@@ -116,7 +106,7 @@ export default function Register() {
 
               <div className="input-field col s6">
                 <TreeSelect
-                  value={selectedNodeKey}
+                  value={career}
                   onChange={(e) => setSelectedNodeKey(e.value)}
                   options={nodes}
                   style={{ width: "100%" }}
@@ -127,7 +117,7 @@ export default function Register() {
               <span className="p-float-label">
                 <InputText
                   id="username"
-                  value={value}
+                  value={user}
                   onChange={(e) => setValue(e.target.value)}
                 />
                 <label htmlFor="username">Correo electrónico</label>
@@ -136,7 +126,7 @@ export default function Register() {
               <span className="p-float-label">
                 <InputText
                   id="username"
-                  value={value}
+                  value={password}
                   type="password"
                   onChange={(e) => setValue(e.target.value)}
                 />

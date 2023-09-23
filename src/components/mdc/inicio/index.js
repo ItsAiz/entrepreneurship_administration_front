@@ -1,8 +1,6 @@
 import React from "react";
 import Toolbar from "../toolbar";
 
-import { Card } from "primereact/card";
-
 export default function Index() {
   return (
     <div
