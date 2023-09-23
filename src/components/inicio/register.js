@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from "react";
-import Toolbar from "../toolbar";
 import { InputText } from "primereact/inputtext";
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";
@@ -68,15 +67,8 @@ export default function Register() {
 
   useEffect(() => {}, []);
   return (
+    <>
     <div
-      className="card flex flex-column md:flex-row gap-3"
-      style={{
-        background: "#fff54d",
-      }}
-    >
-      <Toolbar />
-
-      <div
         className="card flex justify-content-center"
         style={{
           marginTop: "5%",
@@ -147,6 +139,6 @@ export default function Register() {
       </div>
 
       <br></br>
-    </div>
+    </>
   );
 }

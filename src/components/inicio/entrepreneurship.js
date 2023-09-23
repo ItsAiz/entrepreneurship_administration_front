@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Toolbar from "../toolbar";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { dataEntrepreneurship } from "../../../api/entrepreneurship";
@@ -17,14 +16,8 @@ export default function Events() {
   }, []);
 
   return (
+    <>
     <div
-      className="card flex flex-column md:flex-row gap-3"
-      style={{
-        background: "#fff54d",
-      }}
-    >
-      <Toolbar />
-      <div
         className="card"
         style={{ marginLeft: "10%", marginRight: "10%", marginTop: "5%" }}
       >
@@ -37,6 +30,6 @@ export default function Events() {
       </div>
       <br></br>
       <br></br>
-    </div>
+    </>
   );
 }
