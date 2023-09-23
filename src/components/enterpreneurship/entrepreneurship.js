@@ -5,6 +5,7 @@ import EnterpreneurshipApi from "../../api/EnterpreneurshipApi";
 import { Toast } from "primereact/toast";
 import { Button } from "primereact/button";
 import EnterpreneurshipModal from "./enterpreneurshipRegister-modal";
+import './enterpreneurStyles.css'
 
 const EnterpreneurshipManangement = () => {
   const [enterpreneurships, setEnterpreneurships] = useState([]);
@@ -66,12 +67,11 @@ const EnterpreneurshipManangement = () => {
 
   const renderActions = (rowData) => {
     return (
-      <div style={{ textAlign: "center" }}>
+      <div className="action-buttons">
         <Button
           label="Edit"
           icon="pi pi-pencil"
           className="p-button-sm p-button-info"
-          style={{ marginRight: "5px" }}
           onClick={() => handleEdit(rowData)}
         />
         <Button
@@ -82,13 +82,13 @@ const EnterpreneurshipManangement = () => {
         />
       </div>
     );
-  };
+  };  
 
   return (
-    <div className={"card"} style={{ marginLeft: "10%", marginRight: "10%", marginTop: "5%" }}>
+    <div className={"card p-datatable-responsive"} style={{ marginLeft: "10%", marginRight: "10%", marginTop: "5%" }}>
       <Toast ref={toast} />
       {Array.isArray(enterpreneurships) && enterpreneurships.length > 0 ? (
-        <DataTable value={enterpreneurships}>
+        <DataTable value={enterpreneurships} className="p-datatable-sm">
           <Column field={'category'} header={'Categoría'} />
           <Column field={'name'} header={'Nombre'} />
           <Column field={'id_user.name'} header={'Cantidad'} />
@@ -104,7 +104,7 @@ const EnterpreneurshipManangement = () => {
           <p>No se encontraron datos.</p>
         </div>
       )}
-
+  
       {isModalOpen && (
         <EnterpreneurshipModal
           isOpen={isModalOpen}

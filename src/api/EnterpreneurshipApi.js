@@ -7,7 +7,11 @@ export default class EnterpreneurshipApi{
     }
 
     static async createEnterpreneurship(enterpreneurshipData){
-        return await api.post('empre/save', enterpreneurshipData)
+        return await api.post('empre/save', enterpreneurshipData, {
+            headers:{
+                'Content-Type': 'multipart/form-data',
+            },
+        })
         .then(getResponseData)
         .catch(escalateError);
     }

@@ -5,6 +5,7 @@ import { Button } from "primereact/button";
 import { Card } from "primereact/card";
 import { Checkbox } from 'primereact/checkbox';
 import { Toast } from "primereact/toast";
+import { FileUpload} from "primereact/fileupload"
 import EnterpreneurshipApi from "../../api/EnterpreneurshipApi";
 import {
     physicalResourcesOptions,
@@ -13,6 +14,7 @@ import {
     careers,
     businessPlan
 } from "../../__mocks__/enterpreneurshipData";
+import './enterpreneurStyles.css'
 
 const EnterpreneurshipForm = ({
   initialEntrepreneurshipData,
@@ -34,10 +36,75 @@ const EnterpreneurshipForm = ({
     };
 
     const onNextStep = () => {
+        if (step === 1) {
+            if (!isUserDataValid()) {
+                return;
+            }
+        } else if (step === 2) {
+            if (!isGeneralDataValid()) {
+                return;
+            }
+        }
         setStep(step + 1);
     };
 
+    const isUserDataValid = () => {
+        if (!entrepreneurshipData.id_user
+            ||!entrepreneurshipData.id_user.name
+            ||!entrepreneurshipData.id_user.lastName
+            ||!entrepreneurshipData.id_user.documentId
+            ||!entrepreneurshipData.id_user.career
+            ||!entrepreneurshipData.id_user.user
+            ||!entrepreneurshipData.id_user.password) {
+            showSticky({
+                severity: "warn",
+                summary: "Warning",
+                detail: "Por favor, complete los datos del estudiante.",
+            });
+            return false;
+        }
+        if (!entrepreneurshipData.id_user.user || !isEmailValid(entrepreneurshipData.id_user.user)) {
+            showSticky({
+                severity: "warn",
+                summary: "Warning",
+                detail: "Por favor, ingrese un correo electrónico válido.",
+            });
+            return false;
+        }
+        return true;
+    };
+
+    const isGeneralDataValid = () => {
+        if (!entrepreneurshipData.name
+            ||!entrepreneurshipData.category
+            ||!entrepreneurshipData.plan_status
+            ||entrepreneurshipData.physical_point === undefined
+            ||!entrepreneurshipData.physical_resources?.length
+            ||!entrepreneurshipData.technological_resources?.length
+            ) {
+            showSticky({
+                severity: "warn",
+                summary: "Warning",
+                detail: "Por favor, complete todos los campos generales del emprendimiento.",
+            });
+            return false;
+        }
+        return true;
+    };
+
+    const isEmailValid = (email) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    };
+
     const handleUpdateEnterpreneurship = async () => {
+        if(!isGeneralDataValid()){
+            showSticky({
+                severity: "warn",
+                summary: "Warning",
+                detail: 'Los campos deben estar completos',
+            });
+        }
         await EnterpreneurshipApi.updateEnterpreneurship(entrepreneurshipData)
         .then((resp) =>{
             showSticky({
@@ -56,6 +123,13 @@ const EnterpreneurshipForm = ({
     };
 
     const handleCreateEnterpreneurship = async () =>{
+        if(!isGeneralDataValid()){
+            showSticky({
+                severity: "warn",
+                summary: "Warning",
+                detail: 'Los campos deben estar completos',
+            });
+        }
         console.log(entrepreneurshipData)
         await EnterpreneurshipApi.createEnterpreneurship(entrepreneurshipData)
         .then((resp) =>{
@@ -76,11 +150,13 @@ const EnterpreneurshipForm = ({
 
     const onXlsFileChange = (e) => {
         const selectedFile = e.target.files[0];
+        const selectedFileForm = new FormData();
+        selectedFileForm.append('file', selectedFile);
         setEntrepreneurshipData({
-            ...entrepreneurshipData,
-            business_plan_name: selectedFile,
-            })
-    };
+          ...entrepreneurshipData,
+          business_plan_name: selectedFileForm,
+        });
+      };
 
     return (
         <div
@@ -142,6 +218,7 @@ const EnterpreneurshipForm = ({
                             },
                             })
                         }
+                        keyfilter={/^[0-9]+$/} 
                         />
                     </div>
                     <div className="col s6">
@@ -222,6 +299,7 @@ const EnterpreneurshipForm = ({
                         <label>Nombre del Emprendimiento</label>
                         <InputText
                         value={entrepreneurshipData.name || ''}
+                        disabled={isEditing ? true : false}
                         onChange={(e) =>
                             setEntrepreneurshipData({
                             ...entrepreneurshipData,
@@ -269,7 +347,9 @@ const EnterpreneurshipForm = ({
                         <br></br>
                         <Dropdown
                             options={['Si', 'No']}
-                            value={entrepreneurshipData.physical_point ? 'Si' : 'No'}
+                            value={entrepreneurshipData.physical_point === undefined
+                                ? ''
+                                : (entrepreneurshipData.physical_point ? 'Si' : 'No')}
                             onChange={(e) =>
                                 setEntrepreneurshipData({
                                     ...entrepreneurshipData,
@@ -373,10 +453,15 @@ const EnterpreneurshipForm = ({
             <Card title="Plan de Negocio">
                 <div className="row">
                     <div className="col s12">
-                        <input
-                            type="file"
-                            accept=".xls"
-                            onChange={onXlsFileChange}
+                        <FileUpload
+                        mode="basic"
+                        chooseLabel="Seleccionar archivo"
+                        uploadLabel="Subir"
+                        accept=".xlsx"
+                        maxFileSize={1000000}
+                        customUpload={true}
+                        onUpload={onXlsFileChange}
+                        display={'block'}
                         />
                     </div>
                 </div>

@@ -1,0 +1,114 @@
+/* Estilos para el Toolbar */
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.menu-icon {
+  display: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #333;
+}
+
+.p-menuitem {
+  margin: 0.5rem 0;
+}
+
+.toolbar-buttons {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+.toolbar-buttons .toolbar-button {
+  margin-left: 1rem; 
+}
+
+.toolbar-button.warning {
+  background-color: #F2cb05;
+  border-color: #F2cb05;
+  color: #333;
+}
+
+.logo-image {
+  width: 54px;
+  height: 34px;
+  margin-right: 0.5rem;
+}
+
+/* Estilos del menú */
+.menu {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 0;
+  left: -200px; /* Inicialmente oculto fuera de la pantalla */
+  bottom: 0;
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border: 1px solid #ccc;
+  z-index: 1;
+  transition: left 0.3s ease-in-out; /* Aplicar animación a la propiedad left */
+  width: 200px; /* Ancho del menú lateral */
+  overflow-y: auto; /* Agrega un scroll si el contenido excede la altura */
+}
+
+.menu.active {
+  left: 0; /* Cuando está activo, se muestra en la posición 0 */
+}
+
+.menu a {
+  text-decoration: none;
+  color: #333;
+  padding: 10px 20px;
+  transition: background-color 0.3s;
+}
+
+.menu a:hover {
+  background-color: #f2cb05;
+  color: #fff;
+}
+
+.close-menu-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.p-menuitem {
+  margin: 0.5rem 0;
+}
+
+@keyframes slideInFromRight {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+  
+  .toolbar-button {
+    margin-left: 1rem;
+    background-color: #F2cb05;
+    border-color: #F2cb05;
+    color: #333;
+  }
+  
+  .toolbar-button.warning {
+    background-color: #F2cb05;
+    border-color: #F2cb05;
+    color: #333;
+  }
+  
+  .logo-image {
+    width: 54px;
+    height: 34px;
+    margin-right: 0.5rem;
+  }
