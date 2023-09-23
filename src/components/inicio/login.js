@@ -3,7 +3,7 @@ import { InputText } from "primereact/inputtext";
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
-import { login } from "../../../api/apiLogin";
+import { login } from "../../api/apiLogin";
 export default function Login() {
   const [formData, setFormData] = useState({
     user: "",

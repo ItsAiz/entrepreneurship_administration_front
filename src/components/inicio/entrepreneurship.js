@@ -1,23 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
-import { dataEntrepreneurship } from "../../../api/entrepreneurship";
 export default function Events() {
   const [products, setProducts] = useState([]);
 
-  useEffect(() => {
-    dataEntrepreneurship()
-      .then((data) => {
-        setProducts(data);
-      })
-      .catch((error) => {
-        console.error("Error al obtener los datos:", error);
-      });
-  }, []);
-
   return (
     <>
-    <div
+      <div
         className="card"
         style={{ marginLeft: "10%", marginRight: "10%", marginTop: "5%" }}
       >
