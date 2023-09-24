@@ -1,6 +1,5 @@
-import { Card } from "primereact/card";
-import { Image } from "primereact/image";
 import { useEffect, useState } from "react";
+import './events.css'
 
 const Events = () => {
   const [events, setEvents] = useState([
