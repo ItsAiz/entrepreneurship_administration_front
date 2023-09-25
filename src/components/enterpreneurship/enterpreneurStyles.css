@@ -1,0 +1,23 @@
+.p-button {
+    display: block !important;
+}
+.action-buttons {
+    align-items: left;
+    display: flex;
+    gap: 10px;
+  }
+
+@media (max-width: 768px) {
+    .p-datatable-responsive {
+      overflow-x: auto;
+    }
+  
+    .p-datatable-responsive table {
+      width: 100%;
+    }
+  
+    .p-datatable-tbody-scrollable {
+      max-height: 300px;
+    }
+}
+  
