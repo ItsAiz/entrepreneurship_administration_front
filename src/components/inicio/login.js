@@ -3,7 +3,7 @@ import { InputText } from "primereact/inputtext";
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
-import { login } from "../../api/apiLogin";
+import apiLogin from "../../api/apiLogin";
 export default function Login() {
   const [formData, setFormData] = useState({
     user: "",
@@ -31,27 +31,41 @@ export default function Login() {
     });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    let notificationData = {};
-
-    try {
-      await login(formData);
-      notificationData = {
-        severity: "success",
-        summary: "Éxito",
-        detail: "Bienvenido al sistema",
-      };
-      window.location.href = "/contact";
-    } catch (error) {
-      notificationData = {
-        severity: "error",
-        summary: "Error",
-        detail: "Usuario no registrado en el sistema",
-      };
+  const handleLogin = async () => {
+    if (!user || !password) {
+      showSticky({
+        severity: "warn",
+        summary: "Advertencia",
+        detail: "Por favor, complete todos los campos.",
+      });
+      return;
     }
+    await apiLogin
+      .login(formData)
+      .then((resp) => {
+        localStorage.setItem("userRole", resp.data.rol);
+        showSticky({
+          severity: "success",
+          summary: "Success",
+          detail: "Inicio de sesión correcto",
+        });
+        setFormData({
+          user: "",
+          password: "",
+        });
+      })
 
-    showSticky(notificationData);
+      .catch((error) => {
+        showSticky({
+          severity: "error",
+          summary: "Error",
+          detail: "Error al iniciar sesión",
+        });
+        setFormData({
+          user: "",
+          password: "",
+        });
+      });
   };
 
   return (
@@ -73,49 +87,38 @@ export default function Login() {
               textAlign: "center",
             }}
           >
-            <form onSubmit={handleSubmit} autoComplete="off">
-              <span className="p-float-label">
-                <InputText
-                  id="username"
-                  name="user"
-                  value={user}
-                  onChange={handleChange}
-                />
-                <label htmlFor="username">Usuario</label>
-              </span>
-              <br />
-              <span className="p-float-label">
-                <InputText
-                  id="password"
-                  name="password"
-                  value={password}
-                  type="password"
-                  onChange={handleChange}
-                  autoComplete="off"
-                />
-                <label htmlFor="password">Contraseña</label>
-              </span>
-              <br />
-
-              <Button
-                label="Iniciar Sesión Administrador"
-                severity="info"
-                className="p-button-sm"
-                style={{
-                  marginTop: "20px",
-                }}
+            <span className="p-float-label">
+              <InputText
+                id="user"
+                name="user"
+                value={user}
+                onChange={handleChange}
               />
-
-              <Button
-                label="Iniciar Sesión Usuario"
-                severity="info"
-                className="p-button-sm"
-                style={{
-                  marginTop: "20px",
-                  marginLeft: "20px",
-                }}
+              <label htmlFor="username">Usuario</label>
+            </span>
+            <br />
+            <span className="p-float-label">
+              <InputText
+                id="password"
+                name="password"
+                value={password}
+                type="password"
+                onChange={handleChange}
+                autoComplete="off"
               />
-            </form>
+              <label htmlFor="password">Contraseña</label>
+            </span>
+            <br />
+
+            <Button
+              label="Iniciar Sesión Administrador"
+              severity="info"
+              className="p-button-sm"
+              style={{
+                marginTop: "20px",
+              }}
+              onClick={handleLogin}
+            />
           </Card>
         </div>
       </div>

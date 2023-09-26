@@ -1,23 +1,37 @@
-import { api } from ".";
+import { api, getResponseData, escalateError } from "./index";
+import bcrypt from "bcryptjs";
 
-export async function login(formData) {
-  try {
-    const response = await fetch(`${api}/users/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    });
+export default class apiLogin {
+  static async login(loginData) {
+    try {
+      const hashedPassword = await bcrypt.hash(loginData.password, 10);
+      loginData.password = hashedPassword;
+      const response = await api.post("users/login", loginData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-    if (response.status) {
-      console.log(response.status);
-      const data = await response.json();
-      return data;
-    } else {
-      throw new Error("Usuario no registrado");
+      return getResponseData(response);
+    } catch (error) {
+      escalateError(error);
     }
-  } catch (error) {
-    throw new Error(`Hubo un error en la solicitud: ${error.message}`);
+  }
+
+  static async userRegister(userRegister) {
+    try {
+      const hashedPassword = await bcrypt.hash(userRegister.password, 10);
+      userRegister.password = hashedPassword;
+      userRegister.rol = "Estudiante";
+      const response = await api.post("users", userRegister, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      return getResponseData(response);
+    } catch (error) {
+      escalateError(error);
+    }
   }
 }
