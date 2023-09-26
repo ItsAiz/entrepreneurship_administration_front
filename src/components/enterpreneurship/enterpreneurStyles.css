@@ -7,6 +7,11 @@
     gap: 10px;
   }
 
+  .scrollable-table {
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
 @media (max-width: 768px) {
     .p-datatable-responsive {
       overflow-x: auto;

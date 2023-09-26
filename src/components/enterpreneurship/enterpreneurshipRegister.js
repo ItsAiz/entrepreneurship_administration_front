@@ -24,6 +24,7 @@ const EnterpreneurshipForm = ({
     const [entrepreneurshipData, setEntrepreneurshipData] = useState(
         initialEntrepreneurshipData || {}
     );
+    const [selectedFile, setSelectedFile] = useState([]);
     const toast = useRef(null);
 
     const showSticky = (notificationData) => {
@@ -36,6 +37,7 @@ const EnterpreneurshipForm = ({
     };
 
     const onNextStep = () => {
+        console.log(entrepreneurshipData)
         if (step === 1) {
             if (!isUserDataValid()) {
                 return;
@@ -53,7 +55,7 @@ const EnterpreneurshipForm = ({
             ||!entrepreneurshipData.id_user.name
             ||!entrepreneurshipData.id_user.lastName
             ||!entrepreneurshipData.id_user.documentId
-            ||!entrepreneurshipData.id_user.career
+            || isEditing ? !entrepreneurshipData.id_user.id_career.career : !entrepreneurshipData.id_user.career
             ||!entrepreneurshipData.id_user.user
             ||!entrepreneurshipData.id_user.password) {
             showSticky({
@@ -98,7 +100,7 @@ const EnterpreneurshipForm = ({
     };
 
     const handleUpdateEnterpreneurship = async () => {
-        if(!isGeneralDataValid()){
+        if(!isGeneralDataValid() || !entrepreneurshipData.business_plan || entrepreneurshipData.business_plan == null){
             showSticky({
                 severity: "warn",
                 summary: "Warning",
@@ -110,7 +112,7 @@ const EnterpreneurshipForm = ({
             showSticky({
                 severity: "success",
                 summary: "Success",
-                detail: resp,
+                detail: resp.state,
             });
         })
         .catch((error)=>{
@@ -123,20 +125,24 @@ const EnterpreneurshipForm = ({
     };
 
     const handleCreateEnterpreneurship = async () =>{
-        if(!isGeneralDataValid()){
+        if(!isGeneralDataValid() || !entrepreneurshipData.business_plan || entrepreneurshipData.business_plan == null){
             showSticky({
                 severity: "warn",
                 summary: "Warning",
                 detail: 'Los campos deben estar completos',
             });
+            return;
         }
-        console.log(entrepreneurshipData)
-        await EnterpreneurshipApi.createEnterpreneurship(entrepreneurshipData)
+        const enterpreneurshipDataFinal = {
+            ...entrepreneurshipData,
+            data_status: false,
+        };
+        await EnterpreneurshipApi.createEnterpreneurship(enterpreneurshipDataFinal)
         .then((resp) =>{
             showSticky({
                 severity: "success",
                 summary: "Success",
-                detail: resp,
+                detail: resp.state,
             });
         })
         .catch((error) => {
@@ -148,15 +154,34 @@ const EnterpreneurshipForm = ({
         });
     }
 
-    const onXlsFileChange = (e) => {
-        const selectedFile = e.target.files[0];
-        const selectedFileForm = new FormData();
-        selectedFileForm.append('file', selectedFile);
+    const handleFileRemove = () =>{
+        setEntrepreneurshipData({
+            ...entrepreneurshipData,
+            business_plan: null,
+        });
+    }
+
+    const uploadInvoice = (data) =>{
+        setSelectedFile(data);
         setEntrepreneurshipData({
           ...entrepreneurshipData,
-          business_plan_name: selectedFileForm,
+          business_plan: data,
         });
-      };
+    };
+
+    const onXlsFileUpload = ({files}) => {
+        const [file] = files;
+        const fileReader = new FileReader();
+        fileReader.onload = (e) => {
+            const fileData = {
+                name: file.name,
+                type: file.type,
+                content: e.target.result
+            };
+            uploadInvoice(fileData);
+        };
+        fileReader.readAsDataURL(file);
+    };
 
     return (
         <div
@@ -226,7 +251,9 @@ const EnterpreneurshipForm = ({
                         <br></br>
                         <Dropdown
                             options={careers.map((career) => ({ label: career, value: career }))}
-                            value={entrepreneurshipData.id_user ? entrepreneurshipData.id_user.career : ''}
+                            value={ entrepreneurshipData.id_user?.id_career
+                                ? entrepreneurshipData.id_user.id_career?.career
+                                : entrepreneurshipData.id_user?.career || ''}
                             disabled={isEditing ? true : false}
                             onChange={(e) =>
                                 setEntrepreneurshipData({
@@ -460,9 +487,19 @@ const EnterpreneurshipForm = ({
                         accept=".xlsx"
                         maxFileSize={1000000}
                         customUpload={true}
-                        onUpload={onXlsFileChange}
+                        uploadHandler={onXlsFileUpload}
                         display={'block'}
+                        auto={true}
                         />
+                        {entrepreneurshipData.business_plan && (
+                            <div>
+                                <label>Archivo seleccionado : {selectedFile.name} </label>
+                                <Button
+                                label={'Eliminar archivo'}
+                                onClick={handleFileRemove}
+                                />
+                            </div> 
+                        )}
                     </div>
                 </div>
                 <div

@@ -85,7 +85,7 @@ const EnterpreneurshipManangement = () => {
   };  
 
   return (
-    <div className={"card p-datatable-responsive"} style={{ marginLeft: "10%", marginRight: "10%", marginTop: "5%" }}>
+    <div className={"card p-datatable-responsive scrollable-table"} style={{ marginLeft: "10%", marginRight: "10%", marginTop: "5%" }}>
       <Toast ref={toast} />
       {Array.isArray(enterpreneurships) && enterpreneurships.length > 0 ? (
         <DataTable value={enterpreneurships} className="p-datatable-sm">
