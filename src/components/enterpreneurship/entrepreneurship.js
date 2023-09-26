@@ -6,7 +6,6 @@ import { Toast } from "primereact/toast";
 import { Button } from "primereact/button";
 import EnterpreneurshipModal from "./enterpreneurshipRegister-modal";
 import "./enterpreneurStyles.css";
-import { Menu } from "primereact/menu";
 
 const EnterpreneurshipManangement = () => {
   const [enterpreneurships, setEnterpreneurships] = useState([]);
@@ -64,62 +63,7 @@ const EnterpreneurshipManangement = () => {
         });
       });
   };
-  const items = [
-    {
-      label: "Administrador",
-      items: [
-        {
-          label: "Registrar emprendimiento",
-          icon: "pi pi-refresh",
-          command: () => {
-            toast.current.show({
-              severity: "success",
-              summary: "Updated",
-              detail: "Data Updated",
-              life: 3000,
-            });
-          },
-        },
-        {
-          label: "Ver emprendimientos",
-          icon: "pi pi-times",
-          command: () => {
-            toast.current.show({
-              severity: "warn",
-              summary: "Delete",
-              detail: "Data Deleted",
-              life: 3000,
-            });
-          },
-        },
 
-        {
-          label: "Eventos de emprendimientos",
-          icon: "pi pi-times",
-          command: () => {
-            toast.current.show({
-              severity: "warn",
-              summary: "Delete",
-              detail: "Data Deleted",
-              life: 3000,
-            });
-          },
-        },
-        {
-          label: "Comentarios de la página",
-          icon: "pi pi-times",
-          command: () => {
-            toast.current.show({
-              severity: "warn",
-              summary: "Delete",
-              detail: "Data Deleted",
-              life: 3000,
-            });
-          },
-        },
-      ],
-    },
-  ];
   const renderActions = (rowData) => {
     return (
       <div className="action-buttons">
@@ -140,68 +84,33 @@ const EnterpreneurshipManangement = () => {
   };
 
   return (
-    <div
-      className="p-grid"
-      style={{
-        marginLeft: "2%",
-        marginRight: "2%",
-        marginTop: "3%",
-        display: "flex",
-        flexDirection: "row",
-        alignItems: "flex-start",
-      }}
-    >
-      <div className="p-col-3" style={{ marginRight: "20px" }}>
-        <Menu model={items} />
-      </div>
-      <div
-        className="card p-datatable-responsive"
-        style={{ flex: "1", marginRight: "20px" }}
-      >
-        <Toast ref={toast} />
-        {Array.isArray(enterpreneurships) && enterpreneurships.length > 0 ? (
-          <DataTable
-            value={enterpreneurships}
-            className="p-datatable-sm"
-            style={{ width: "100%" }}
-          >
-            <Column field={"category"} header={"Categoría"} />
-            <Column field={"name"} header={"Nombre"} />
-            <Column field={"id_user.name"} header={"Cantidad"} />
-            <Column field={"plan_status"} header={"Estado"} />
-            {localStorage.getItem("userRole") !== "Estudiante" &&
-              localStorage.getItem("userRole") !== "" && (
-                <React.Fragment>
-                  {console.log(localStorage.getItem("userRole"))}
-                  <Column
-                    body={renderActions}
-                    header={"Acciones"}
-                    style={{ textAlign: "center", width: "120px" }}
-                  />
-                </React.Fragment>
-              )}
-          </DataTable>
-        ) : (
-          <div
-            style={{
-              textAlign: "center",
-              padding: "20px",
-              fontSize: "18px",
-              color: "#777",
-            }}
-          >
-            <p>No se encontraron datos.</p>
-          </div>
-        )}
-
-        {isModalOpen && (
-          <EnterpreneurshipModal
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-            initialEntrepreneurshipData={editingData}
+    <div className={"card p-datatable-responsive"} style={{ marginLeft: "10%", marginRight: "10%", marginTop: "5%" }}>
+      <Toast ref={toast} />
+      {Array.isArray(enterpreneurships) && enterpreneurships.length > 0 ? (
+        <DataTable value={enterpreneurships} className="p-datatable-sm">
+          <Column field={'category'} header={'Categoría'} />
+          <Column field={'name'} header={'Nombre'} />
+          <Column field={'id_user.name'} header={'Cantidad'} />
+          <Column field={'plan_status'} header={'Estado'} />
+          <Column
+            body={renderActions}
+            header={'Acciones'}
+            style={{ textAlign: 'center' }}
           />
-        )}
-      </div>
+        </DataTable>
+      ) : (
+        <div style={{ textAlign: "center", padding: "20px", fontSize: "18px", color: "#777" }}>
+          <p>No se encontraron datos.</p>
+        </div>
+      )}
+  
+      {isModalOpen && (
+        <EnterpreneurshipModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          initialEntrepreneurshipData={editingData}
+        />
+      )}
     </div>
   );
 };

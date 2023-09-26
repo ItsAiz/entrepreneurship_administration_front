@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "primereact/button";
 import { Link } from "react-router-dom";
 import "./mdcStyles.css";
 
 const Toolbar = () => {
   const [menuVisible, setMenuVisible] = useState(false);
-
+  const [isFixed, setIsFixed] = useState(false);
   const toggleMenu = () => {
     setMenuVisible(!menuVisible);
   };
@@ -14,8 +14,25 @@ const Toolbar = () => {
     setMenuVisible(false);
   };
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const scrollThreshold = 200;
+      if (scrollY > scrollThreshold) {
+        setIsFixed(true);
+      } else {
+        setIsFixed(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   return (
-    <div className="toolbar">
+    <div className={`toolbar ${isFixed ? "fixed" : ""}`}>
       <Button
         icon="pi pi-bars"
         className={`menu-icon ${menuVisible ? "active" : ""}`}
@@ -26,7 +43,7 @@ const Toolbar = () => {
           <img
             src="/resources/images/logo.jpg"
             alt="Imagen"
-            style={{ marginRight: "0.5rem", width: "54px", height: "34px" }}
+            style={{ marginRight: "0.5rem", width: "120px", height: "52px" }}
           />
       </div>
       <div className="toolbar-buttons">
