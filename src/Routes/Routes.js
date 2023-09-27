@@ -1,6 +1,5 @@
-import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
-
+import React, { useState, useEffect } from "react";
+import { Routes, Route, Navigate, Link } from "react-router-dom";
 import Login from "../components/inicio/login";
 import Entrepreneurship from "../components/enterpreneurship/entrepreneurship";
 import EntrepreneurshipForm from "../components/enterpreneurship/enterpreneurshipRegister";
@@ -15,7 +14,42 @@ const isAuthenticated = () => {
   return isLoggedIn;
 };
 
+const inactivityTimeout = 60000;
+let inactivityTimer;
+
 const RoutesApp = () => {
+  const [shouldRedirect, setShouldRedirect] = useState(false);
+
+  const logout = () => {
+    localStorage.clear();
+    setShouldRedirect(true);
+  };
+
+  const resetInactivityTimer = () => {
+    clearTimeout(inactivityTimer);
+    inactivityTimer = setTimeout(logout, inactivityTimeout);
+  };
+  const handleUserActivity = () => {
+    resetInactivityTimer();
+  };
+
+  useEffect(() => {
+    resetInactivityTimer();
+
+    document.addEventListener("mousemove", handleUserActivity);
+    document.addEventListener("keydown", handleUserActivity);
+
+    return () => {
+      document.removeEventListener("mousemove", handleUserActivity);
+      document.removeEventListener("keydown", handleUserActivity);
+      clearTimeout(inactivityTimer);
+    };
+  });
+
+  if (shouldRedirect) {
+    return <Link to="/" />;
+  }
+
   return (
     <Routes>
       <Route path={"/"} element={<Index />} />

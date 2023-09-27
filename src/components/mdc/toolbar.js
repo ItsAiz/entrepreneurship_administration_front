@@ -33,6 +33,7 @@ const Toolbar = () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
   const showSticky = (notificationData) => {
     toast.current.show({
       severity: notificationData.severity,
@@ -41,6 +42,7 @@ const Toolbar = () => {
       life: 2000,
     });
   };
+
   const handleLogout = () => {
     localStorage.clear();
     showSticky({
@@ -50,6 +52,7 @@ const Toolbar = () => {
     });
     window.location.href = "/login";
   };
+
   return (
     <div className={`toolbar ${isFixed ? "fixed" : ""}`}>
       <Toast ref={toast} />
@@ -67,7 +70,16 @@ const Toolbar = () => {
         />
       </div>
       <div className="toolbar-buttons">
-        {!isLoggedIn ? (
+        {isLoggedIn ? (
+          <Button
+            label="Cerrar sesión"
+            style={{
+              backgroundColor: "#F2cb05",
+              borderColor: "#F2cb05",
+            }}
+            onClick={handleLogout}
+          />
+        ) : (
           <React.Fragment>
             <Link to="/login">
               <Button
@@ -86,15 +98,6 @@ const Toolbar = () => {
               />
             </Link>
           </React.Fragment>
-        ) : (
-          <Button
-            label="Cerrar sesión"
-            style={{
-              backgroundColor: "#F2cb05",
-              borderColor: "#F2cb05",
-            }}
-            onClick={handleLogout}
-          />
         )}
       </div>
       <div className={`menu ${menuVisible ? "active" : ""}`}>
