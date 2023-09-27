@@ -3,36 +3,10 @@ import { InputText } from "primereact/inputtext";
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
-import { TreeSelect } from "primereact/treeselect";
+import { Dropdown } from "primereact/dropdown";
 import apiLogin from "../../api/apiLogin";
-
+import { careers } from "../../__mocks__/enterpreneurshipData";
 export default function Register() {
-  const carreras = [
-    {
-      label: "Carreras",
-      key: "carreras",
-      children: [
-        { label: "Ingeniería de minas", key: "Ingeniería de Minas" },
-        { label: "Ingeniería Industrial", key: "Ingeniería Industrial" },
-        { label: "Ingeniería Electrónica", key: "Ingeniería Electrónica" },
-        {
-          label: "Ingeniería de Sistemas y Computación",
-          key: "Ingeniería de Sistemas y Computación",
-        },
-        { label: "Ingeniería Geológica", key: "Ingeniería Geológica" },
-        {
-          label: "Administración de Empresas",
-          key: "Administración de Empresas",
-        },
-        { label: "Contaduría Pública", key: "Contaduría Pública" },
-        {
-          label: "Finanzas y Comercio Internacional",
-          key: "Finanzas y Comercio Internacional",
-        },
-      ],
-    },
-  ];
-
   const [formData, setFormData] = useState({
     name: "",
     lastName: "",
@@ -67,21 +41,27 @@ export default function Register() {
     });
   };
 
+  const isEmailValid = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const { name, lastName, documentId, career, user, password } = formData;
 
   const handleRegister = async () => {
-    if (
-      !name ||
-      !lastName ||
-      !documentId ||
-      !career ||
-      !user ||
-      !password
-    ) {
+    if (!name || !lastName || !documentId || !career || !user || !password) {
       showSticky({
         severity: "warn",
         summary: "Advertencia",
         detail: "Por favor, complete todos los campos.",
+      });
+      return;
+    }
+    if (!isEmailValid(user)) {
+      showSticky({
+        severity: "error",
+        summary: "Error",
+        detail: "Por favor, ingrese un correo electrónico válido.",
       });
       return;
     }
@@ -91,7 +71,7 @@ export default function Register() {
         showSticky({
           severity: "success",
           summary: "Success",
-          detail: "Inicio de sesión correcto",
+          detail: "Registro exitoso",
         });
         setFormData({
           name: "",
@@ -138,69 +118,86 @@ export default function Register() {
               textAlign: "center",
             }}
           >
-            <span className="p-float-label">
-              <InputText
-                id="name"
-                name="name"
-                value={name}
-                onChange={handleChange}
-              />
-              <label htmlFor="user">Nombre</label>
-            </span>
-            <br></br>
-            <span className="p-float-label">
-              <InputText
-                id="lastName"
-                name="lastName"
-                value={lastName}
-                onChange={handleChange}
-              />
-              <label htmlFor="user">Apellido</label>
-            </span>
-            <br></br>
-
-            <span className="p-float-label">
-              <InputText
-                id="documentId"
-                name="documentId"
-                value={documentId}
-                onChange={handleChange}
-              />
-              <label htmlFor="document">N° Documento</label>
-            </span>
-            <br></br>
-
-            <div className="input-field col s6">
-              <TreeSelect
-                value={career}
-                onChange={handleCareerChange}
-                options={carreras}
-                style={{ width: "100%" }}
-                placeholder="Carrera"
-              ></TreeSelect>
+            <div className="row">
+              <div className="col s6">
+                <span className="p-float-label">
+                  <InputText
+                    id="name"
+                    name="name"
+                    value={name}
+                    onChange={handleChange}
+                    keyfilter={/^[A-Za-z\s]+$/}
+                  />
+                  <label htmlFor="user">Nombre</label>
+                </span>
+              </div>
+              <div className="col s6">
+                <span className="p-float-label">
+                  <InputText
+                    id="lastName"
+                    name="lastName"
+                    value={lastName}
+                    onChange={handleChange}
+                    keyfilter={/^[A-Za-z\s]+$/}
+                  />
+                  <label htmlFor="user">Apellido</label>
+                </span>
+              </div>
             </div>
-            <br></br>
-            <span className="p-float-label">
-              <InputText
-                id="user"
-                name="user"
-                value={user}
-                onChange={handleChange}
-              />
-              <label>Correo electrónico</label>
-            </span>
-            <br></br>
-            <span className="p-float-label">
-              <InputText
-                id="password"
-                name="password"
-                value={password}
-                type="password"
-                onChange={handleChange}
-              />
-              <label htmlFor="password">Contraseña</label>
-            </span>
-            <br></br>
+
+            <div className="row">
+              <div className="col s6">
+                <span className="p-float-label">
+                  <InputText
+                    id="documentId"
+                    name="documentId"
+                    value={documentId}
+                    onChange={handleChange}
+                    keyfilter={/^[0-9\s]+$/}
+                  />
+                  <label htmlFor="document">N° Documento</label>
+                </span>
+              </div>
+              <div className="col s6">
+                <Dropdown
+                  value={career}
+                  options={careers.map((career) => ({
+                    label: career,
+                    value: career,
+                  }))}
+                  onChange={handleCareerChange}
+                  placeholder="Seleccione una carrera"
+                  style={{ width: "100%" }}
+                />
+              </div>
+            </div>
+
+            <div className="row">
+              <div className="col s6">
+                <span className="p-float-label">
+                  <InputText
+                    id="user"
+                    name="user"
+                    value={user}
+                    onChange={handleChange}
+                  />
+                  <label>Correo electrónico</label>
+                </span>
+              </div>
+              <div className="col s6">
+                <span className="p-float-label">
+                  <InputText
+                    id="password"
+                    name="password"
+                    value={password}
+                    type="password"
+                    onChange={handleChange}
+                  />
+                  <label htmlFor="password">Contraseña</label>
+                </span>
+              </div>
+            </div>
+
             <Button
               label="Registrarme"
               severity="info"

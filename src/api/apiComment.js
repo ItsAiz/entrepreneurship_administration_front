@@ -18,4 +18,8 @@ export default class apiComment {
       escalateError(error);
     }
   }
+
+  static async getComments() {
+    return await api.get("comments").then(getResponseData).catch(escalateError);
+  }
 }

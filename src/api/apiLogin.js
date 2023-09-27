@@ -1,11 +1,10 @@
 import { api, getResponseData, escalateError } from "./index";
-import bcrypt from "bcryptjs";
 
 export default class apiLogin {
   static async login(loginData) {
     try {
-      const hashedPassword = await bcrypt.hash(loginData.password, 10);
-      loginData.password = hashedPassword;
+      //const hashedPassword = await bcrypt.hash(loginData.password, 10);
+      //loginData.password = hashedPassword;
       const response = await api.post("users/login", loginData, {
         headers: {
           "Content-Type": "application/json",
@@ -20,8 +19,8 @@ export default class apiLogin {
 
   static async userRegister(userRegister) {
     try {
-      const hashedPassword = await bcrypt.hash(userRegister.password, 10);
-      userRegister.password = hashedPassword;
+      //const hashedPassword = await bcrypt.hash(userRegister.password, 10);
+      //userRegister.password = hashedPassword;
       userRegister.rol = "Estudiante";
       const response = await api.post("users", userRegister, {
         headers: {

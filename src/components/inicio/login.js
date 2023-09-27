@@ -30,7 +30,10 @@ export default function Login() {
       [name]: value,
     });
   };
-
+  const isEmailValid = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
   const handleLogin = async () => {
     if (!user || !password) {
       showSticky({
@@ -40,15 +43,25 @@ export default function Login() {
       });
       return;
     }
+    if (!isEmailValid(user)) {
+      showSticky({
+        severity: "error",
+        summary: "Error",
+        detail: "Por favor, ingrese un correo electrónico válido.",
+      });
+      return;
+    }
     await apiLogin
       .login(formData)
       .then((resp) => {
         localStorage.setItem("userRole", resp.data.rol);
+        localStorage.setItem("isLoggedIn", true);
         showSticky({
           severity: "success",
           summary: "Success",
           detail: "Inicio de sesión correcto",
         });
+        window.location = "/entrepreneurship-register";
         setFormData({
           user: "",
           password: "",
@@ -110,15 +123,17 @@ export default function Login() {
             </span>
             <br />
 
-            <Button
-              label="Iniciar Sesión Administrador"
-              severity="info"
-              className="p-button-sm"
-              style={{
-                marginTop: "20px",
-              }}
-              onClick={handleLogin}
-            />
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <Button
+                label="Iniciar Sesión"
+                severity="info"
+                className="p-button-sm"
+                style={{
+                  marginTop: "20px",
+                }}
+                onClick={handleLogin}
+              />
+            </div>
           </Card>
         </div>
       </div>

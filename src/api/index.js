@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const apiURL = "http://localhost:3000/";
+const apiURL =
+  process.env.REACT_APP_API_URL || "https://emprendimientos-uptc.vercel.app/";
 
 export let api = axios.create({
   baseURL: apiURL,
