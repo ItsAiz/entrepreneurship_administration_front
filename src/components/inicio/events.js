@@ -1,120 +1,144 @@
-import React, { useState } from "react";
-import { InputText } from "primereact/inputtext";
-import { Card } from "primereact/card";
-import { InputTextarea } from "primereact/inputtextarea";
-import { Button } from "primereact/button";
+import { useEffect, useState } from "react";
 
-export default function Contact() {
-  const [formData, setFormData] = useState({
-    nombre: "",
-    correo: "",
-    comentario: "",
-  });
+const Events = () => {
+  const [events, setEvents] = useState([
+    {
+      titulo: "Venta en la plaza del sol",
+      fecha: "11-06-2000",
+      descripcion:
+        "Se realizara una venta con todos los emprendimientos en la plaza del sol, la cual es la plaza principal de la seccional Sogamoso",
+      imagen:
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Logo_de_la_UPTC.svg/640px-Logo_de_la_UPTC.svg.png",
+    },
+    {
+      titulo: "Venta en la plaza del sol",
+      fecha: "11-06-2000",
+      descripcion:
+        "Se realizara una venta con todos los emprendimientos en la plaza del sol, la cual es la plaza principal de la seccional Sogamoso",
+      imagen:
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Logo_de_la_UPTC.svg/640px-Logo_de_la_UPTC.svg.png",
+    },
+    {
+      titulo: "Venta en la plaza del sol",
+      fecha: "11-06-2000",
+      descripcion:
+        "Se realizara una venta con todos los emprendimientos en la plaza del sol, la cual es la plaza principal de la seccional Sogamoso",
+      imagen:
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Logo_de_la_UPTC.svg/640px-Logo_de_la_UPTC.svg.png",
+    },
+    {
+      titulo: "Venta en la plaza del sol",
+      fecha: "11-06-2000",
+      descripcion:
+        "Se realizara una venta con todos los emprendimientos en la plaza del sol, la cual es la plaza principal de la seccional Sogamoso",
+      imagen:
+        "https://www.uptc.edu.co/sitio/export/sites/default/portal/.content/imagenes/frontal/uptc_radio_logo.jpg_1618313331.jpg",
+    },
+    {
+      titulo: "Venta en la plaza del sol",
+      fecha: "11-06-2000",
+      descripcion:
+        "Se realizara una venta con todos los emprendimientos en la plaza del sol, la cual es la plaza principal de la seccional Sogamoso",
+      imagen:
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Logo_de_la_UPTC.svg/640px-Logo_de_la_UPTC.svg.png",
+    },
+  ]);
+  const [page, setPage] = useState(1);
 
-  const { nombre, correo, comentario } = formData;
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    // Aquí puedes realizar la llamada a la API y enviar formData
-    try {
-      const response = await fetch("URL_DE_TU_API", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        // La solicitud fue exitosa, puedes realizar acciones adicionales si es necesario
-        console.log("Datos enviados con éxito");
-      } else {
-        // Manejar errores en caso de una respuesta no exitosa
-        console.error("Error al enviar datos");
-      }
-    } catch (error) {
-      console.error("Error en la solicitud:", error);
+  useEffect(() => {
+    async function fetchEvents() {
+      const response = await fetch("");
+      const data = await response.json();
+      setEvents(data);
     }
-  };
+    fetchEvents();
+  }, []);
 
   return (
     <>
-    <div
-        className="card flex justify-content-center"
-        style={{
-          marginTop: "5%",
-          marginLeft: "10%",
-          marginRight: "10%",
-        }}
-      >
-        <div className="row">
-          <div className="col s12 m6 center-align">
-            <h2>Contactenos</h2>
-            <p>Oficina xxx - Segundo piso Edificio Administrativo</p>
-            <p>UPTC Seccional Sogamoso</p>
-            <p>Telefono: 5555555555</p>
-            <p>Correo: xxxxx@uptc.edu.co</p>
-          </div>
-          <div className="col s12 m6">
-            <Card
-              title="Comentarios"
-              style={{
-                textAlign: "center",
-              }}
-            >
-              <form onSubmit={handleSubmit}>
-                <div className="row">
-                  <div className="col s12">
-                    <label>Nombre</label>
-                    <InputText
-                      name="nombre"
-                      value={nombre}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div className="col s12">
-                    <label>Correo electrónico</label>
-                    <InputText
-                      type="email"
-                      name="correo"
-                      value={correo}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div className="col s12">
-                    <label>Comentario</label>
-                    <InputTextarea
-                      name="comentario"
-                      value={comentario}
-                      onChange={handleChange}
-                      rows={1}
-                      cols={3}
-                    />
-                  </div>
+      {events.slice(page * 8 - 8, page * 8).length > 0 ? (
+        <>
+          <div className="grid grid-cols-1 gap-8 p-10 h-full w-full md:grid-cols-3 lg:grid-cols-4">
+            {events.slice(page * 8 - 8, page * 8).map((event) => (
+              <div
+                className="card md:w-80 bg-base-100 shadow-lg shadow-gray-500"
+                data-theme="corporate"
+              >
+                <figure className="px-5 pt-5">
+                  <img
+                    src={event.imagen}
+                    alt="pet"
+                    className="h-72 w-full object-cover"
+                  />
+                </figure>
+                <div className="card-body">
+                  <h2 className="card-title" style={{ fontWeight: "bold" }}>
+                    {event.titulo}
+                  </h2>
+                  <p className="badge badge-secondary">{event.fecha}</p>
+                  <p className="font-light">{event.descripcion}</p>
                 </div>
-                <Button
-                  label="Enviar comentario"
-                  severity="info"
-                  icon="pi pi-check"
-                  className="p-button-sm"
-                  style={{
-                    marginTop: "20px",
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-center content-center p-5">
+            <div className="join" data-theme="corporate">
+              <button
+                className="join-item btn"
+                onClick={() => {
+                  page > 1 && setPage(page - 1);
+                }}
+              >
+                «
+              </button>
+              <button className="join-item btn">Página {page}</button>
+              <button
+                className="join-item btn"
+                onClick={() => {
+                  events.slice(page * 8 - 8, page * 8).length > 0 &&
+                    setPage(page + 1);
+                }}
+              >
+                »
+              </button>
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="hero min-h-screen">
+          <div className="hero-content text-center flex-col">
+            <div className="max-w-md">
+              <h1 className="text-3xl font-bold py-10">
+                No hay eventos para ver
+              </h1>
+            </div>
+            <div className="flex justify-center content-center">
+              <div className="join" data-theme="corporate">
+                <button
+                  className="join-item btn"
+                  onClick={() => {
+                    page > 0 && setPage(page - 1);
                   }}
-                />
-              </form>
-            </Card>
+                >
+                  «
+                </button>
+                <button className="join-item btn">Página {page}</button>
+                <button
+                  className="join-item btn"
+                  onClick={() => {
+                    events.slice(page * 8 - 8, page * 8).length > 0 &&
+                      setPage(page + 1);
+                  }}
+                >
+                  »
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-      <br></br>
+      )}
     </>
   );
-}
+};
+
+export default Events;
