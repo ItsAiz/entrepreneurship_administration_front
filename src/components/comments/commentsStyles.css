@@ -1,0 +1,14 @@
+.card {
+    position: relative;
+}
+
+.date-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.date {
+    font-size: 14px;
+    color: #555;
+}

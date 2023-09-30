@@ -118,6 +118,7 @@ const Events = () => {
           </div>
         </>
       ) : (
+<<<<<<< HEAD
         <div
           style={{
             minHeight: "100vh",
@@ -153,6 +154,13 @@ const Events = () => {
                 className="text-3xl font-bold py-10"
               >
                 No hay eventos para ver
+=======
+        <div className="hero min-h-screen">
+          <div className="hero-content text-center flex-col">
+            <div className="max-w-md">
+              <h1 className="text-3xl font-bold py-10">
+                No hay eventos 
+>>>>>>> 84a41f7a01b69530777e299727ea9596d6551eda
               </h1>
             </div>
             <div

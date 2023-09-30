@@ -5,12 +5,12 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { Button } from "primereact/button";
 import { FaFacebook, FaInstagram, FaGlobe } from "react-icons/fa";
 import { Toast } from "primereact/toast";
-
+import apiComment from "../../api/apiComment";
 export default function Events() {
   const [formData, setFormData] = useState({
-    nombre: "",
-    correo: "",
-    comentario: "",
+    name: "",
+    email: "",
+    comment: "",
   });
   const toast = useRef(null);
 
@@ -22,7 +22,7 @@ export default function Events() {
       life: 2000,
     });
   };
-  const { nombre, correo, comentario } = formData;
+  const { name, email, comment } = formData;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -31,48 +31,55 @@ export default function Events() {
       [name]: value,
     });
   };
+  const isEmailValid = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    let notificationData = {};
-
-    try {
-      const response = await fetch("URL_DE_TU_API", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
+  const handleSendComment = async () => {
+    if (!name || !email || !comment) {
+      showSticky({
+        severity: "warn",
+        summary: "Advertencia",
+        detail: "Por favor, complete todos los campos.",
       });
-
-      if (response.ok) {
-        // La solicitud fue exitosa, puedes realizar acciones adicionales si es necesario
-        notificationData = {
-          severity: "success",
-          summary: "Éxito",
-          detail: "Los datos se enviaron con éxito",
-        };
-      } else {
-        // Manejar errores en caso de una respuesta no exitosa
-        notificationData = {
-          severity: "error",
-          summary: "Error",
-          detail: "Hubo un error al enviar los datos",
-        };
-      }
-    } catch (error) {
-      notificationData = {
+      return;
+    }
+    if (!isEmailValid(email)) {
+      showSticky({
         severity: "error",
         summary: "Error",
-        detail: "Hubo un error en la solicitud: " + error.message,
-      };
+        detail: "Por favor, ingrese un correo electrónico válido.",
+      });
+      return;
     }
-    showSticky(notificationData);
+    await apiComment
+      .saveComment(formData)
+      .then((resp) => {
+        showSticky({
+          severity: "success",
+          summary: "Success",
+          detail: "Comentario enviado con éxito",
+        });
+        setFormData({
+          name: "",
+          email: "",
+          comment: "",
+        });
+      })
+      .catch((error) => {
+        localStorage.setItem("userRole", "NA");
+        showSticky({
+          severity: "error",
+          summary: "Error",
+          detail: "Error al iniciar sesión" + error.message,
+        });
+      });
   };
 
   return (
     <>
-    <div
+      <div
         className="card flex justify-content-center"
         style={{
           marginTop: "5%",
@@ -125,39 +132,34 @@ export default function Events() {
                 textAlign: "center",
               }}
             >
-              <form onSubmit={handleSubmit}>
-                <label>Nombre</label>
-                <InputText
-                  name="nombre"
-                  value={nombre}
-                  onChange={handleChange}
-                />
-                <label>Correo electrónico</label>
-                <InputText
-                  type="email"
-                  name="correo"
-                  value={correo}
-                  onChange={handleChange}
-                />
+              <label>Nombre</label>
+              <InputText name="name" value={name} onChange={handleChange} />
+              <label>Correo electrónico</label>
+              <InputText
+                type="email"
+                name="email"
+                value={email}
+                onChange={handleChange}
+              />
 
-                <label>Comentario</label>
-                <InputTextarea
-                  name="comentario"
-                  value={comentario}
-                  onChange={handleChange}
-                  rows={1}
-                  cols={3}
-                />
-                <Button
-                  label="Enviar comentario"
-                  severity="info"
-                  icon="pi pi-check"
-                  className="p-button-sm"
-                  style={{
-                    marginTop: "20px",
-                  }}
-                />
-              </form>
+              <label>Comentario</label>
+              <InputTextarea
+                name="comment"
+                value={comment}
+                onChange={handleChange}
+                rows={1}
+                cols={3}
+              />
+              <Button
+                label="Enviar comentario"
+                severity="info"
+                icon="pi pi-check"
+                className="p-button-sm"
+                style={{
+                  marginTop: "20px",
+                }}
+                onClick={handleSendComment}
+              />
             </Card>
           </div>
         </div>

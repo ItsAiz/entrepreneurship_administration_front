@@ -3,15 +3,13 @@ import { InputText } from "primereact/inputtext";
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
-
+import apiLogin from "../../api/apiLogin";
 export default function Login() {
-  const [value, setValue] = useState("");
-
   const [formData, setFormData] = useState({
-    nombre: "",
-    correo: "",
-    comentario: "",
+    user: "",
+    password: "",
   });
+
   const toast = useRef(null);
 
   const showSticky = (notificationData) => {
@@ -22,7 +20,8 @@ export default function Login() {
       life: 2000,
     });
   };
-  const { nombre, correo, comentario } = formData;
+
+  const { user, password } = formData;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -31,48 +30,60 @@ export default function Login() {
       [name]: value,
     });
   };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    let notificationData = {};
-
-    try {
-      const response = await fetch("URL_DE_TU_API", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
+  const isEmailValid = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+  const handleLogin = async () => {
+    if (!user || !password) {
+      showSticky({
+        severity: "warn",
+        summary: "Advertencia",
+        detail: "Por favor, complete todos los campos.",
       });
-
-      if (response.ok) {
-        // La solicitud fue exitosa, puedes realizar acciones adicionales si es necesario
-        notificationData = {
-          severity: "success",
-          summary: "Éxito",
-          detail: "Los datos se enviaron con éxito",
-        };
-      } else {
-        // Manejar errores en caso de una respuesta no exitosa
-        notificationData = {
-          severity: "error",
-          summary: "Error",
-          detail: "Hubo un error al enviar los datos",
-        };
-      }
-    } catch (error) {
-      notificationData = {
+      return;
+    }
+    if (!isEmailValid(user)) {
+      showSticky({
         severity: "error",
         summary: "Error",
-        detail: "Hubo un error en la solicitud: " + error.message,
-      };
+        detail: "Por favor, ingrese un correo electrónico válido.",
+      });
+      return;
     }
-    showSticky(notificationData);
+    await apiLogin
+      .login(formData)
+      .then((resp) => {
+        localStorage.setItem("userRole", resp.data.rol);
+        localStorage.setItem("isLoggedIn", true);
+        showSticky({
+          severity: "success",
+          summary: "Success",
+          detail: "Inicio de sesión correcto",
+        });
+        window.location = "/entrepreneurship-register";
+        setFormData({
+          user: "",
+          password: "",
+        });
+      })
+
+      .catch((error) => {
+        showSticky({
+          severity: "error",
+          summary: "Error",
+          detail: "Error al iniciar sesión",
+        });
+        setFormData({
+          user: "",
+          password: "",
+        });
+      });
   };
 
   return (
     <>
-    <div
+      <div
         className="card flex justify-content-center"
         style={{
           marginTop: "5%",
@@ -89,52 +100,45 @@ export default function Login() {
               textAlign: "center",
             }}
           >
-            <form onSubmit={handleSubmit} autocomplete="off">
-              <span className="p-float-label">
-                <InputText
-                  id="username"
-                  value={value}
-                  onChange={(e) => setValue(e.target.value)}
-                />
-                <label htmlFor="username">Usuario</label>
-              </span>
-              <br></br>
-              <span className="p-float-label">
-                <InputText
-                  id="username"
-                  value={value}
-                  type="password"
-                  onChange={(e) => setValue(e.target.value)}
-                  autocomplete="off"
-                />
-                <label htmlFor="username">Contraseña</label>
-              </span>
-              <br></br>
+            <span className="p-float-label">
+              <InputText
+                id="user"
+                name="user"
+                value={user}
+                onChange={handleChange}
+              />
+              <label htmlFor="username">Usuario</label>
+            </span>
+            <br />
+            <span className="p-float-label">
+              <InputText
+                id="password"
+                name="password"
+                value={password}
+                type="password"
+                onChange={handleChange}
+                autoComplete="off"
+              />
+              <label htmlFor="password">Contraseña</label>
+            </span>
+            <br />
 
+            <div style={{ display: "flex", justifyContent: "center" }}>
               <Button
-                label="Iniciar Sesión Administrador"
+                label="Iniciar Sesión"
                 severity="info"
                 className="p-button-sm"
                 style={{
                   marginTop: "20px",
                 }}
+                onClick={handleLogin}
               />
-
-              <Button
-                label="Iniciar Sesión Usuario"
-                severity="info"
-                className="p-button-sm"
-                style={{
-                  marginTop: "20px",
-                  marginLeft: "20px",
-                }}
-              />
-            </form>
+            </div>
           </Card>
         </div>
       </div>
 
-      <br></br>
+      <br />
     </>
   );
 }
