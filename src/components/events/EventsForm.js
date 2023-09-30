@@ -1,9 +1,61 @@
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 
 const EventsForm = () => {
+  const [responseError, setResponseError] = useState("");
+  const navigate = useNavigate();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  async function registEvent(dataForm) {
+    setResponseError("");
+    if (dataForm.image_name[0]) {
+      const image = new FormData();
+      image.append("file", dataForm.image_name[0]);
+      image.append("upload_preset", "unidad_uptc");
+      const responseCloud = await fetch(
+        "https://api.cloudinary.com/v1_1/dbhl95fyu/image/upload",
+        {
+          method: "POST",
+          body: image,
+        }
+      );
+      const imageUrl = await responseCloud.json();
+      if (imageUrl.error) {
+        setResponseError(imageUrl.error.message);
+        return;
+      }
+      dataForm.image_name = imageUrl.secure_url;
+    } else {
+      dataForm.image_name = "";
+    }
+    const response = await fetch(
+      "https://emprendimientos-uptc.vercel.app/events",
+      {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify(dataForm),
+      }
+    );
+    const data = await response.json();
+
+    if (data.state) {
+      navigate("/events-admin");
+    } else {
+      setResponseError(data.data);
+    }
+  }
+
   return (
-    <div
+    <form
       style={{
         display: "grid",
         gridTemplateColumns: "1fr 1fr",
@@ -12,6 +64,7 @@ const EventsForm = () => {
         margin: "100px",
         background: "white",
       }}
+      onSubmit={handleSubmit(registEvent)}
     >
       <div
         style={{
@@ -25,35 +78,54 @@ const EventsForm = () => {
       </div>
       <div style={{ padding: "16px" }}>
         <label style={{ fontSize: "15px" }}>Titulo</label>
-        <input type="text" />
+        <input
+          type="text"
+          name="title"
+          {...register("title", {
+            required: true,
+          })}
+        />
+        {errors.title?.type === "required" && (
+          <div style={{ color: "red" }}>
+            <small>Este campo es requerido.</small>
+          </div>
+        )}
       </div>
       <div style={{ padding: "16px" }}>
         <label style={{ fontSize: "15px" }}>Lugar</label>
-        <input type="text" />
+        <input
+          type="text"
+          name="place"
+          {...register("place", {
+            required: true,
+          })}
+        />
+        {errors.place?.type === "required" && (
+          <div style={{ color: "red" }}>
+            <small>Este campo es requerido.</small>
+          </div>
+        )}
       </div>
       <div style={{ padding: "16px" }}>
         <label style={{ fontSize: "15px" }}>Fecha</label>
-        <Calendar style={{ width: "100%" }} />
-      </div>
-      <div style={{ padding: "16px" }}>
-        <label style={{ fontSize: "15px" }}>Hora</label>
-        <input type="text" />
-      </div>
-      <div style={{ padding: "16px" }}>
-        <label
-          style={{
-            fontSize: "15px",
-          }}
-        >
-          Descripción
-        </label>
-        <textarea type="text" style={{ height: "150px", resize: "none" }} />
+        <Calendar
+          style={{ width: "100%" }}
+          name="date"
+          {...register("date", {
+            required: true,
+          })}
+        />
+        {errors.date?.type === "required" && (
+          <div style={{ color: "red" }}>
+            <small>Este campo es requerido.</small>
+          </div>
+        )}
       </div>
       <div
         style={{
           padding: "16px",
           display: "flex",
-          flexDirection: "column"
+          flexDirection: "column",
         }}
       >
         <label style={{ fontSize: "15px" }}>Imagen</label>
@@ -67,11 +139,11 @@ const EventsForm = () => {
             borderRadius: "5px",
             textAlign: "center",
             fontWeight: "bold",
-            fontSize: "14px"
+            fontSize: "14px",
           }}
         >
-          <i className="pi pi-plus" style={{marginRight: "7px"}}></i>
-          Elegir 
+          <i className="pi pi-plus" style={{ marginRight: "7px" }}></i>
+          Elegir
           <input
             type="file"
             accept="image/*"
@@ -79,8 +151,39 @@ const EventsForm = () => {
               display: "none",
               width: "150px",
             }}
+            name="image_name"
+            {...register("image_name", {
+              required: true,
+            })}
           />
         </label>
+        {errors.image_name?.type === "required" && (
+          <div style={{ color: "red" }}>
+            <small>Este campo es requerido.</small>
+          </div>
+        )}
+      </div>
+      <div style={{ padding: "16px", gridColumn: "span 2" }}>
+        <label
+          style={{
+            fontSize: "15px",
+          }}
+        >
+          Descripción
+        </label>
+        <textarea
+          type="text"
+          style={{ height: "150px", resize: "none" }}
+          name="description"
+          {...register("description", {
+            required: true,
+          })}
+        />
+        {errors.description?.type === "required" && (
+          <div style={{ color: "red" }}>
+            <small>Este campo es requerido.</small>
+          </div>
+        )}
       </div>
       <div
         style={{ padding: "16px", justifyContent: "center", display: "flex" }}
@@ -100,6 +203,7 @@ const EventsForm = () => {
       >
         <Button
           label="Guardar"
+          type="submit"
           style={{
             backgroundColor: "#4DCFF2",
             borderColor: "#4DCFF2",
@@ -107,7 +211,10 @@ const EventsForm = () => {
           }}
         />
       </div>
-    </div>
+      <div style={{ color: "red" }}>
+        <small>{responseError}</small>
+      </div>
+    </form>
   );
 };
 

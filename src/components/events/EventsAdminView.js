@@ -21,7 +21,7 @@ const EventsAdminView = () => {
       {events.slice(page * 8 - 8, page * 8).length > -1 ? (
         <>
           <div style={{padding: "20px"}}>
-            <EventsTable data={events.slice(page * 8 - 8, page * 8)} />
+            <EventsTable events={events.slice(page * 8 - 8, page * 8)} />
           </div>
           <div
             className="flex justify-center content-center p-5"
