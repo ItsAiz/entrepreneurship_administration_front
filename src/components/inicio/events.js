@@ -109,7 +109,7 @@ const Events = () => {
           <div className="hero-content text-center flex-col">
             <div className="max-w-md">
               <h1 className="text-3xl font-bold py-10">
-                No hay eventos para ver
+                No hay eventos 
               </h1>
             </div>
             <div className="flex justify-center content-center">

@@ -1,30 +1,21 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { InputText } from "primereact/inputtext";
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
 import { Dropdown } from "primereact/dropdown";
-import { TreeSelect } from "primereact/treeselect";
-
+import apiLogin from "../../api/apiLogin";
+import { careers } from "../../__mocks__/enterpreneurshipData";
 export default function Register() {
-  const [value, setValue] = useState("");
-
   const [formData, setFormData] = useState({
-    nombre: "",
-    correo: "",
-    comentario: "",
+    name: "",
+    lastName: "",
+    documentId: "",
+    career: "",
+    user: "",
+    password: "",
   });
   const toast = useRef(null);
-
-  const showSticky = (notificationData) => {
-    toast.current.show({
-      severity: notificationData.severity,
-      summary: notificationData.summary,
-      detail: notificationData.detail,
-      life: 2000,
-    });
-  };
-  const { nombre, correo, comentario } = formData;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -34,56 +25,88 @@ export default function Register() {
     });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    let notificationData = {};
+  const handleCareerChange = (e) => {
+    setFormData({
+      ...formData,
+      career: e.value,
+    });
+  };
 
-    try {
-      const response = await fetch("URL_DE_TU_API", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
+  const showSticky = (notificationData) => {
+    toast.current.show({
+      severity: notificationData.severity,
+      summary: notificationData.summary,
+      detail: notificationData.detail,
+      life: 2000,
+    });
+  };
+
+  const isEmailValid = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const { name, lastName, documentId, career, user, password } = formData;
+
+  const handleRegister = async () => {
+    if (!name || !lastName || !documentId || !career || !user || !password) {
+      showSticky({
+        severity: "warn",
+        summary: "Advertencia",
+        detail: "Por favor, complete todos los campos.",
       });
-
-      if (response.ok) {
-        // La solicitud fue exitosa, puedes realizar acciones adicionales si es necesario
-        notificationData = {
-          severity: "success",
-          summary: "Éxito",
-          detail: "Los datos se enviaron con éxito",
-        };
-      } else {
-        // Manejar errores en caso de una respuesta no exitosa
-        notificationData = {
-          severity: "error",
-          summary: "Error",
-          detail: "Hubo un error al enviar los datos",
-        };
-      }
-    } catch (error) {
-      notificationData = {
+      return;
+    }
+    if (!isEmailValid(user)) {
+      showSticky({
         severity: "error",
         summary: "Error",
-        detail: "Hubo un error en la solicitud: " + error.message,
-      };
+        detail: "Por favor, ingrese un correo electrónico válido.",
+      });
+      return;
     }
-    showSticky(notificationData);
+    await apiLogin
+      .userRegister(formData)
+      .then((resp) => {
+        showSticky({
+          severity: "success",
+          summary: "Success",
+          detail: "Registro exitoso",
+        });
+        setFormData({
+          name: "",
+          lastName: "",
+          documentId: "",
+          career: "",
+          user: "",
+          password: "",
+        });
+      })
+      .catch((error) => {
+        showSticky({
+          severity: "error",
+          summary: "Error",
+          detail: "Error al iniciar sesión",
+        });
+        setFormData({
+          name: "",
+          lastName: "",
+          documentId: "",
+          career: "",
+          user: "",
+          password: "",
+        });
+      });
   };
-  const [nodes] = useState(null);
-  const [selectedNodeKey, setSelectedNodeKey] = useState(null);
 
-  useEffect(() => {}, []);
   return (
     <>
-    <div
+      <div
         className="card flex justify-content-center"
         style={{
           marginTop: "5%",
           marginLeft: "20%",
           marginRight: "20%",
-          
         }}
       >
         <Toast ref={toast} />
@@ -95,55 +118,95 @@ export default function Register() {
               textAlign: "center",
             }}
           >
-            <form onSubmit={handleSubmit}>
-              <span className="p-float-label">
-                <InputText
-                  id="username"
-                  value={value}
-                  onChange={(e) => setValue(e.target.value)}
-                />
-                <label htmlFor="username">Nombre</label>
-              </span>
-              <br></br>
-
-              <div className="input-field col s6">
-                <TreeSelect
-                  value={selectedNodeKey}
-                  onChange={(e) => setSelectedNodeKey(e.value)}
-                  options={nodes}
-                  style={{ width: "100%" }}
-                  placeholder="Carrera"
-                ></TreeSelect>
+            <div className="row">
+              <div className="col s6">
+                <span className="p-float-label">
+                  <InputText
+                    id="name"
+                    name="name"
+                    value={name}
+                    onChange={handleChange}
+                    keyfilter={/^[A-Za-z\s]+$/}
+                  />
+                  <label htmlFor="user">Nombre</label>
+                </span>
               </div>
-              <br></br>
-              <span className="p-float-label">
-                <InputText
-                  id="username"
-                  value={value}
-                  onChange={(e) => setValue(e.target.value)}
+              <div className="col s6">
+                <span className="p-float-label">
+                  <InputText
+                    id="lastName"
+                    name="lastName"
+                    value={lastName}
+                    onChange={handleChange}
+                    keyfilter={/^[A-Za-z\s]+$/}
+                  />
+                  <label htmlFor="user">Apellido</label>
+                </span>
+              </div>
+            </div>
+
+            <div className="row">
+              <div className="col s6">
+                <span className="p-float-label">
+                  <InputText
+                    id="documentId"
+                    name="documentId"
+                    value={documentId}
+                    onChange={handleChange}
+                    keyfilter={/^[0-9\s]+$/}
+                  />
+                  <label htmlFor="document">N° Documento</label>
+                </span>
+              </div>
+              <div className="col s6">
+                <Dropdown
+                  value={career}
+                  options={careers.map((career) => ({
+                    label: career,
+                    value: career,
+                  }))}
+                  onChange={handleCareerChange}
+                  placeholder="Seleccione una carrera"
+                  style={{ width: "100%" }}
                 />
-                <label htmlFor="username">Correo electrónico</label>
-              </span>
-              <br></br>
-              <span className="p-float-label">
-                <InputText
-                  id="username"
-                  value={value}
-                  type="password"
-                  onChange={(e) => setValue(e.target.value)}
-                />
-                <label htmlFor="username">Contraseña</label>
-              </span>
-              <br></br>
-              <Button
-                label="Registrarme"
-                severity="info"
-                className="p-button-sm"
-                style={{
-                  marginTop: "20px",
-                }}
-              />
-            </form>
+              </div>
+            </div>
+
+            <div className="row">
+              <div className="col s6">
+                <span className="p-float-label">
+                  <InputText
+                    id="user"
+                    name="user"
+                    value={user}
+                    onChange={handleChange}
+                  />
+                  <label>Correo electrónico</label>
+                </span>
+              </div>
+              <div className="col s6">
+                <span className="p-float-label">
+                  <InputText
+                    id="password"
+                    name="password"
+                    value={password}
+                    type="password"
+                    onChange={handleChange}
+                  />
+                  <label htmlFor="password">Contraseña</label>
+                </span>
+              </div>
+            </div>
+
+            <Button
+              label="Registrarme"
+              severity="info"
+              className="p-button-sm"
+              onClick={handleRegister}
+              style={{
+                marginTop: "20px",
+              }}
+            />
           </Card>
         </div>
       </div>

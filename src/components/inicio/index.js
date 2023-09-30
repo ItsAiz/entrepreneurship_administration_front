@@ -1,11 +1,9 @@
 import React from "react";
 
-import { Card } from "primereact/card";
-
 export default function Index() {
   return (
     <>
-    <div
+      <div
         className="card flex justify-content-center"
         style={{
           marginTop: "5%",
@@ -19,7 +17,7 @@ export default function Index() {
               src="/resources/images/logo.jpg"
               alt="Logo"
               style={{
-                width: "100%", // La imagen ocupará el 100% del ancho del contenedor
+                width: "100%",
                 height: "auto",
               }}
             />
@@ -30,6 +28,6 @@ export default function Index() {
         </div>
       </div>
       <br></br>
-      </>
+    </>
   );
 }
