@@ -1,9 +1,17 @@
-import React from 'react'
+import { Column } from "primereact/column";
+import { DataTable } from "primereact/datatable";
+import React from "react";
 
-const EventsTable = () => {
+const EventsTable = ({ events }) => {
   return (
-    <div>EventsTable</div>
-  )
-}
+    <DataTable value={events} tableStyle={{ minWidth: "50rem" }}>
+      <Column field="title" header="Titulo"></Column>
+      <Column field="place" header="Lugar"></Column>
+      <Column field="date" header="Fecha"></Column>
+      <Column field="quantity" header="Descripcion"></Column>
+      <Column field="image" header="Imagen"></Column>
+    </DataTable>
+  );
+};
 
-export default EventsTable
+export default EventsTable;
