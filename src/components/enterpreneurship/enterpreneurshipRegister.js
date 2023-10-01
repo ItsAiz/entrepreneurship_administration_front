@@ -197,7 +197,6 @@ const EnterpreneurshipForm = ({ initialEntrepreneurshipData, isEditing }) => {
   const handleDownloadFile = async() => {
     await EnterpreneurshipApi.getDownloadFile(initialEntrepreneurshipData.id_user.documentId)
     .then((response) => {
-        console.log(response)
         const url = window.URL.createObjectURL(new Blob([response]));
         const link = document.createElement('a');
         link.href = url;
