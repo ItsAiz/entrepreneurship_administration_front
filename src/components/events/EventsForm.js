@@ -2,11 +2,9 @@ import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
 
 const EventsForm = () => {
   const [responseError, setResponseError] = useState("");
-  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -35,6 +33,7 @@ const EventsForm = () => {
     } else {
       dataForm.image_name = "";
     }
+    console.log(dataForm);
     const response = await fetch(
       "https://emprendimientos-uptc.vercel.app/events",
       {
@@ -46,9 +45,10 @@ const EventsForm = () => {
       }
     );
     const data = await response.json();
+    console.log(data);
 
     if (data.state) {
-      navigate("/events-admin");
+      window.location.reload(true)
     } else {
       setResponseError(data.data);
     }
@@ -60,8 +60,6 @@ const EventsForm = () => {
         display: "grid",
         gridTemplateColumns: "1fr 1fr",
         gridGap: "16px",
-        padding: "20px",
-        margin: "100px",
         background: "white",
       }}
       onSubmit={handleSubmit(registEvent)}
@@ -190,12 +188,14 @@ const EventsForm = () => {
       >
         <Button
           label="Cancelar"
+          type="button"
           icon="pi pi-arrow-left"
           style={{
             backgroundColor: "#4DCFF2",
             borderColor: "#4DCFF2",
             width: "250px",
           }}
+          onClick={() => window.location.reload(true)}
         />
       </div>
       <div

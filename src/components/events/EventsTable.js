@@ -9,11 +9,11 @@ import { Calendar } from "primereact/calendar";
 import { ProgressSpinner } from "primereact/progressspinner";
 
 const EventsTable = ({ events }) => {
-  const [eventData, setEventData] = useState({});
+  const [eventData, setEventData] = useState(null);
   const [responseError, setResponseError] = useState("");
   const [editId, setEditId] = useState("");
   const [visible, setVisible] = useState(false);
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit, reset } = useForm();
   const toast = useRef(null);
 
   const showSticky = (notificationData) => {
@@ -26,6 +26,8 @@ const EventsTable = ({ events }) => {
   };
 
   async function showModal(idEdit) {
+    reset()
+    setEventData(null)
     const response = await fetch(
       `https://emprendimientos-uptc.vercel.app/events/${idEdit}`
     );
@@ -70,7 +72,7 @@ const EventsTable = ({ events }) => {
 
     if (data.state) {
       setVisible(false);
-      window.location.reload(true, 3000);
+      window.location.reload(true, 5000);
     } else {
       setResponseError(data.data);
     }
@@ -104,47 +106,56 @@ const EventsTable = ({ events }) => {
 
   return (
     <>
-      <DataTable value={events} tableStyle={{ minWidth: "50rem" }}>
-        <Column field="title" header="Titulo"></Column>
-        <Column field="place" header="Lugar"></Column>
-        <Column field="date" header="Fecha"></Column>
-        <Column field="description" header="Descripcion"></Column>
-        <Column field="image_name" header="Imagen"></Column>
-        <Column
-          body={(rowData) => (
-            <div style={{ display: "flex", gridGap: "5px" }}>
-              <Toast ref={toast} />
-              <Button
-                label="Editar"
-                icon="pi pi-pencil"
-                className="p-button-sm p-button-info"
-                style={{
-                  padding: "5px",
-                }}
-                onClick={() => showModal(rowData._id)}
-              />
-              <Button
-                label="Borrar"
-                icon="pi pi-trash"
-                className="p-button-sm p-button-danger"
-                style={{
-                  padding: "5px",
-                }}
-                onClick={() => deleteEvent(rowData._id)}
-              />
-            </div>
-          )}
-          header="Acciones"
-        ></Column>
-      </DataTable>
+      <div
+        className={"card p-datatable-responsive scrollable-table"}
+        style={{ width: "100%" }}
+      >
+        <DataTable
+          value={events}
+          className="p-datatable-lg"
+          tableStyle={{ minWidth: "50rem" }}
+        >
+          <Column field="title" header="Titulo"></Column>
+          <Column field="place" header="Lugar"></Column>
+          <Column field="date" header="Fecha"></Column>
+          <Column field="description" header="Descripcion"></Column>
+          <Column field="image_name" header="Imagen"></Column>
+          <Column
+            body={(rowData) => (
+              <div style={{ display: "flex", gridGap: "5px" }}>
+                <Toast ref={toast} />
+                <Button
+                  label="Editar"
+                  icon="pi pi-pencil"
+                  className="p-button-sm p-button-info"
+                  style={{
+                    padding: "5px",
+                  }}
+                  onClick={() => showModal(rowData._id)}
+                />
+                <Button
+                  label="Borrar"
+                  icon="pi pi-trash"
+                  className="p-button-sm p-button-danger"
+                  style={{
+                    padding: "5px",
+                  }}
+                  onClick={() => deleteEvent(rowData._id)}
+                />
+              </div>
+            )}
+            header="Acciones"
+          ></Column>
+        </DataTable>
+      </div>
 
       <Dialog
         header="Editar evento"
         visible={visible}
         style={{ width: "70vw" }}
-        onHide={() => setVisible(false)}
+        onHide={() => {setVisible(false); setEventData(null)}}
       >
-        {eventData.place ? (
+        {eventData ? (
           <form
             style={{
               display: "grid",
@@ -253,7 +264,7 @@ const EventsTable = ({ events }) => {
                   borderColor: "#4DCFF2",
                   width: "250px",
                 }}
-                onClick={() => setVisible(!visible)}
+                onClick={() => {setVisible(false); setEventData(null); console.log("btncnacel");}}
               />
             </div>
             <div
@@ -278,7 +289,9 @@ const EventsTable = ({ events }) => {
             </div>
           </form>
         ) : (
-          <ProgressSpinner />
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <ProgressSpinner />
+          </div>
         )}
       </Dialog>
     </>
