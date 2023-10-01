@@ -1,21 +1,37 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import EventsTable from "./EventsTable";
 import GroupDemo from "../mdc/menu";
 import { Button } from "primereact/button";
 import EventsForm from "./EventsForm";
+import EventApi from "../../api/EventApi";
 
 const EventsAdminView = () => {
   const [events, setEvents] = useState([]);
   const [page, setPage] = useState(1);
   const [viewForm, setViewForm] = useState(false);
+  const toast = useRef(null);
+
+  const showSticky = (notificationData) => {
+    toast.current.show({
+      severity: notificationData.severity,
+      summary: notificationData.summary,
+      detail: notificationData.detail,
+      life: 2000,
+    });
+  };
 
   useEffect(() => {
     async function fetchEvents() {
-      const response = await fetch(
-        "https://emprendimientos-uptc.vercel.app/events"
-      );
-      const data = await response.json();
-      setEvents(data.data);
+      try {
+        const resp = await EventApi.getEvents();
+        setEvents(resp.data);
+      } catch (error) {
+        showSticky({
+          severity: "error",
+          summary: "Error",
+          detail: "Hubo un error en la solicitud: " + error.message,
+        });
+      }
     }
     fetchEvents();
   }, []);
@@ -27,19 +43,25 @@ const EventsAdminView = () => {
           <div className="p-col-3" style={{ marginRight: "20px" }}>
             <GroupDemo />
           </div>
-          <div className="p-col-12" style={{ width: "84%", marginBottom: "20px", marginTop: "8px" }}>
+          <div
+            className="p-col-12"
+            style={{ width: "84%", marginBottom: "20px", marginTop: "8px" }}
+          >
             <EventsForm />
           </div>
         </div>
       ) : (
         <>
-          {events.slice(page * 8 - 8, page * 8).length > -1 ? (
+          {events.slice(page * 5 - 5, page * 5).length > 0 ? (
             <>
               <div className="p-grid">
                 <div className="p-col-3" style={{ marginRight: "20px" }}>
                   <GroupDemo />
                 </div>
-                <div className="p-col-12" style={{ width: "84%", marginTop: "10px" }}>
+                <div
+                  className="p-col-12"
+                  style={{ width: "84%", marginTop: "10px" }}
+                >
                   <Button
                     label="Crear un Evento"
                     icon="pi pi-plus"
@@ -95,7 +117,7 @@ const EventsAdminView = () => {
                       cursor: "pointer",
                     }}
                     onClick={() => {
-                      events.slice(page * 8 - 8, page * 8).length > 0 &&
+                      events.slice(page * 5 - 5, page * 5).length > 0 &&
                         setPage(page + 1);
                     }}
                   >

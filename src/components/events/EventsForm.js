@@ -2,6 +2,7 @@ import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import EventApi from "../../api/EventApi";
 
 const EventsForm = () => {
   const [responseError, setResponseError] = useState("");
@@ -33,25 +34,14 @@ const EventsForm = () => {
     } else {
       dataForm.image_name = "";
     }
-    console.log(dataForm);
-    const response = await fetch(
-      "https://emprendimientos-uptc.vercel.app/events",
-      {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify(dataForm),
-      }
-    );
-    const data = await response.json();
-    console.log(data);
-
-    if (data.state) {
-      window.location.reload(true)
-    } else {
-      setResponseError(data.data);
-    }
+    console.log("here");
+    await EventApi.createEvent(dataForm)
+      .then((resp) => {
+        window.location.reload(resp.state)
+      })
+      .catch((error) => {
+        setResponseError(error)
+      });
   }
 
   return (

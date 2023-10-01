@@ -1,25 +1,41 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Card } from "primereact/card";
 import { Image } from "primereact/image";
+import EventApi from "../../api/EventApi";
 
 const Events = () => {
   const [events, setEvents] = useState([]);
   const [page, setPage] = useState(1);
+  const toast = useRef(null)
+
+  const showSticky = (notificationData) => {
+    toast.current.show({
+      severity: notificationData.severity,
+      summary: notificationData.summary,
+      detail: notificationData.detail,
+      life: 2000,
+    });
+  };
 
   useEffect(() => {
     async function fetchEvents() {
-      const response = await fetch(
-        "https://emprendimientos-uptc.vercel.app/events"
-      );
-      const data = await response.json();
-      setEvents(data.data);
+      try {
+        const resp = await EventApi.getEvents();
+        setEvents(resp.data);
+      } catch (error) {
+        showSticky({
+          severity: "error",
+          summary: "Error",
+          detail: "Hubo un error en la solicitud: " + error.message,
+        });
+      }
     }
     fetchEvents();
   }, []);
 
   return (
     <>
-      {events.slice(page * 8 - 8, page * 8).length > 0 ? (
+      {events.slice(page * 6 - 6, page * 6).length > 0 ? (
         <>
           <div
             className="grid grid-cols-1 gap-8 p-10 h-full w-full md:grid-cols-3 lg:grid-cols-4"
@@ -32,11 +48,11 @@ const Events = () => {
               width: "100%",
             }}
           >
-            {events.slice(page * 8 - 8, page * 8).map((event, index) => (
+            {events.slice(page * 6 - 6, page * 6).map((event, index) => (
               <Card
                 key={index}
                 title={event.title}
-                subTitle={event.date}
+                subTitle={event.place + " - " + event.date}
                 header={
                   <div
                     className="container"
@@ -110,7 +126,7 @@ const Events = () => {
                   cursor: "pointer",
                 }}
                 onClick={() => {
-                  events.slice(page * 8 - 8, page * 8).length > 0 &&
+                  events.slice(page * 6 - 6, page * 6).length > 0 &&
                     setPage(page + 1);
                 }}
               >

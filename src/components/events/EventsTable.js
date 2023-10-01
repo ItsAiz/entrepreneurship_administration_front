@@ -7,6 +7,7 @@ import { Dialog } from "primereact/dialog";
 import { useForm } from "react-hook-form";
 import { Calendar } from "primereact/calendar";
 import { ProgressSpinner } from "primereact/progressspinner";
+import EventApi from "../../api/EventApi";
 
 const EventsTable = ({ events }) => {
   const [eventData, setEventData] = useState(null);
@@ -16,23 +17,11 @@ const EventsTable = ({ events }) => {
   const { register, handleSubmit, reset } = useForm();
   const toast = useRef(null);
 
-  const showSticky = (notificationData) => {
-    toast.current.show({
-      severity: notificationData.severity,
-      summary: notificationData.summary,
-      detail: notificationData.detail,
-      life: 2000,
-    });
-  };
-
   async function showModal(idEdit) {
-    reset()
-    setEventData(null)
-    const response = await fetch(
-      `https://emprendimientos-uptc.vercel.app/events/${idEdit}`
-    );
-    const data = await response.json();
-    setEventData(data.data);
+    reset();
+    setEventData(null);
+    const response = await EventApi.getEvent(idEdit);
+    setEventData(response.data);
     setVisible(true);
     setEditId(idEdit);
   }
@@ -58,49 +47,26 @@ const EventsTable = ({ events }) => {
     } else {
       dataForm.image_name = "";
     }
-    const response = await fetch(
-      `https://emprendimientos-uptc.vercel.app/events/${editId}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify(dataForm),
-      }
-    );
-    const data = await response.json();
 
-    if (data.state) {
+    dataForm._id = editId;
+
+    const response = await EventApi.updateEvent(dataForm);
+
+    if (response.state) {
       setVisible(false);
       window.location.reload(true, 5000);
     } else {
-      setResponseError(data.data);
+      setResponseError(response.data);
     }
   }
 
   async function deleteEvent(idDelete) {
-    const response = await fetch(
-      `https://emprendimientos-uptc.vercel.app/events/${idDelete}`,
-      {
-        method: "DELETE",
-      }
-    );
+    const response = await EventApi.deleteEvent(idDelete);
 
-    const data = await response.json();
-
-    if (data.state) {
-      showSticky({
-        severity: "success",
-        summary: "Success",
-        detail: data.state,
-      });
+    if (response.state) {
       window.location.reload(true, 3000);
     } else {
-      showSticky({
-        severity: "error",
-        summary: "Error",
-        detail: "Hubo un error en la solicitud: " + data.data,
-      });
+      setResponseError(response.data)
     }
   }
 
@@ -153,7 +119,10 @@ const EventsTable = ({ events }) => {
         header="Editar evento"
         visible={visible}
         style={{ width: "70vw" }}
-        onHide={() => {setVisible(false); setEventData(null)}}
+        onHide={() => {
+          setVisible(false);
+          setEventData(null);
+        }}
       >
         {eventData ? (
           <form
@@ -264,7 +233,11 @@ const EventsTable = ({ events }) => {
                   borderColor: "#4DCFF2",
                   width: "250px",
                 }}
-                onClick={() => {setVisible(false); setEventData(null); console.log("btncnacel");}}
+                onClick={() => {
+                  setVisible(false);
+                  setEventData(null);
+                  console.log("btncnacel");
+                }}
               />
             </div>
             <div
