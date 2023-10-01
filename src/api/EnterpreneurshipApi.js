@@ -13,24 +13,45 @@ export default class EnterpreneurshipApi{
     }
 
     static async updateEnterpreneurship(enterpreneurshipData){
-        const { business_plan } = enterpreneurshipData;
+        const {
+            business_plan,
+            category,
+            data_status,
+            id_user,
+            name,
+            physical_point,
+            physical_resources,
+            plan_status,     
+            technological_resources
+        } = enterpreneurshipData;
         const formData = new FormData();
-        formData.append('file', business_plan);
-        enterpreneurshipData.filter((data) => data.business_plan !== business_plan);
-        Object.keys(enterpreneurshipData).forEach((key) => {
-            formData.append(key, enterpreneurshipData[key]);
-        });
-        return await api.put(`empre/${enterpreneurshipData._id}`, formData,  {
-            headers:{
-                'Content-Type': 'multipart/form-data',
-            },
-        })
+        formData.append('business_plan', business_plan);
+        formData.append('category', category);
+        formData.append('data_status', data_status);
+        formData.append('id_user', JSON.stringify(id_user));
+        formData.append('name', name);
+        formData.append('physical_point', physical_point);
+        formData.append('physical_resources', JSON.stringify(physical_resources));
+        formData.append('plan_status', plan_status);
+        formData.append('technological_resources', JSON.stringify(technological_resources));
+        return await api.put(`empre/${enterpreneurshipData._id}`, formData)
         .then(getResponseData)
         .catch(escalateError);
     }
 
     static async deleteEnterpreneurship(enterpreneurshipId){
         return await api.delete(`empre/${enterpreneurshipId}`)
+        .then(getResponseData)
+        .catch(escalateError);
+    }
+    
+    static async getDownloadFile(studentDocumentNumber){
+        return await api.get(`empre/getFile/${studentDocumentNumber}`, {
+            headers: {
+              'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            },
+            responseType: 'blob',
+        })
         .then(getResponseData)
         .catch(escalateError);
     }

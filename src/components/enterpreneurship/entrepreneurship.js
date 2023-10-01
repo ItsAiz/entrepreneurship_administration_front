@@ -89,7 +89,7 @@ const EnterpreneurshipManangement = () => {
   return (
     <div className="p-grid">
       <div className="p-col-3" style={{ marginRight: "20px" }}>
-        <GroupDemo />
+        <GroupDemo/>
       </div>
       <div className="p-col-12" style={{ width: "100%" }}>
         <div

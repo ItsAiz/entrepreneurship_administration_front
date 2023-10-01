@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
@@ -23,6 +23,7 @@ const EnterpreneurshipForm = ({ initialEntrepreneurshipData, isEditing }) => {
     initialEntrepreneurshipData || {}
   );
   const [selectedFile, setSelectedFile] = useState([]);
+  const [selectedFileName, setSelectedFileName] = useState('');
   const toast = useRef(null);
 
   const showSticky = (notificationData) => {
@@ -34,8 +35,14 @@ const EnterpreneurshipForm = ({ initialEntrepreneurshipData, isEditing }) => {
     });
   };
 
+  useEffect(() => {
+    if (isEditing && entrepreneurshipData?.business_plan_name) {
+        setSelectedFileName(entrepreneurshipData.business_plan_name);
+    } 
+  }, [entrepreneurshipData, isEditing]);
+  
+
   const onNextStep = () => {
-    console.log(entrepreneurshipData);
     if (step === 1) {
       if (!isUserDataValid()) {
         return;
@@ -176,32 +183,43 @@ const EnterpreneurshipForm = ({ initialEntrepreneurshipData, isEditing }) => {
     });
   };
 
-  const uploadInvoice = (data) => {
-    setSelectedFile(data);
+  const onXlsFileUpload = ({ files }) => {
+    const [file] = files;
+    const fileNoName = file.slice(0, file.size);
+    const newFile = new File([fileNoName], `${entrepreneurshipData.id_user.documentId}.xlsx`);
+    setSelectedFile(file);
     setEntrepreneurshipData({
       ...entrepreneurshipData,
-      business_plan: data,
+      business_plan: newFile,
     });
   };
 
-  const onXlsFileUpload = ({ files }) => {
-    const [file] = files;
-    const fileReader = new FileReader();
-    fileReader.onload = (e) => {
-      const fileData = {
-        name: file.name,
-        type: file.type,
-        content: e.target.result,
-      };
-      uploadInvoice(fileData);
-    };
-    fileReader.readAsDataURL(file);
+  const handleDownloadFile = async() => {
+    await EnterpreneurshipApi.getDownloadFile(initialEntrepreneurshipData.id_user.documentId)
+    .then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', selectedFileName);
+        document.body.appendChild(link);
+        link.click();
+        window.URL.revokeObjectURL(url);
+    })
+    .catch((error) =>{
+        showSticky({
+            severity: "error",
+            summary: "Error",
+            detail: "Hubo un error al intentar descargar el archivo: " + error.message,
+          });
+    });
   };
 
   return (
     <div className="p-grid">
       <div className="p-col-3" style={{ marginRight: "20px" }}>
-        <GroupDemo />
+        {!isEditing && (
+            <GroupDemo />
+        )}
       </div>
       <div className="p-col-12"style={{ width: "100%" }}>
         <div
@@ -260,6 +278,7 @@ const EnterpreneurshipForm = ({ initialEntrepreneurshipData, isEditing }) => {
                   <div className="col s6">
                     <label>N° documento</label>
                     <InputText
+                      disabled={isEditing}
                       value={
                         entrepreneurshipData.id_user
                           ? entrepreneurshipData.id_user.documentId
@@ -561,15 +580,28 @@ const EnterpreneurshipForm = ({ initialEntrepreneurshipData, isEditing }) => {
                       display={"block"}
                       auto={true}
                     />
-                    {entrepreneurshipData.business_plan && (
+                    {(entrepreneurshipData.business_plan || selectedFileName) && (
                       <div>
                         <label>
-                          Archivo seleccionado : {selectedFile.name}{" "}
+                          Archivo seleccionado : {selectedFile?.length
+                                                ? selectedFile.name
+                                                : selectedFileName}
                         </label>
-                        <Button
-                          label={"Eliminar archivo"}
-                          onClick={handleFileRemove}
-                        />
+                        <div className="p-card-footer" style={{
+                            display: "flex",
+                            width: "100%",
+                        }}>
+                            <Button
+                            label={"Eliminar archivo"}
+                            onClick={handleFileRemove}
+                            />
+                            <Button
+                            label={'Descargar archivo'}
+                            onClick={handleDownloadFile}
+                            style={{marginLeft:'10px'}}
+                            disabled={!isEditing}
+                            />
+                        </div>  
                       </div>
                     )}
                   </div>
@@ -592,6 +624,7 @@ const EnterpreneurshipForm = ({ initialEntrepreneurshipData, isEditing }) => {
                       <Button
                         label="Guardar Cambios"
                         icon="pi pi-check"
+                        style={{marginLeft: '10px'}}
                         onClick={handleUpdateEnterpreneurship}
                       />
                     </>
