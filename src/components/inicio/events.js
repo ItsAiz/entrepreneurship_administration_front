@@ -8,7 +8,9 @@ const Events = () => {
 
   useEffect(() => {
     async function fetchEvents() {
-      const response = await fetch("https://emprendimientos-uptc.vercel.app/events");
+      const response = await fetch(
+        "https://emprendimientos-uptc.vercel.app/events"
+      );
       const data = await response.json();
       setEvents(data.data);
     }
@@ -118,7 +120,6 @@ const Events = () => {
           </div>
         </>
       ) : (
-<<<<<<< HEAD
         <div
           style={{
             minHeight: "100vh",
@@ -154,63 +155,56 @@ const Events = () => {
                 className="text-3xl font-bold py-10"
               >
                 No hay eventos para ver
-=======
-        <div className="hero min-h-screen">
-          <div className="hero-content text-center flex-col">
-            <div className="max-w-md">
-              <h1 className="text-3xl font-bold py-10">
-                No hay eventos 
->>>>>>> 84a41f7a01b69530777e299727ea9596d6551eda
               </h1>
-            </div>
-            <div
-              className="flex justify-center content-center p-5"
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                padding: "1.25rem",
-              }}
-            >
-              <div className="join" data-theme="corporate">
-                <button
-                  className="join-item btn"
-                  style={{
-                    fontSize: "1.5rem",
-                    backgroundColor: "#F2CB05",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => {
-                    page > 1 && setPage(page - 1);
-                  }}
-                >
-                  «
-                </button>
-                <button
-                  className="join-item btn"
-                  style={{
-                    fontSize: "1rem",
-                    margin: "0 0.5rem",
-                    backgroundColor: "#F2CB05",
-                    cursor: "pointer",
-                  }}
-                >
-                  Página {page}
-                </button>
-                <button
-                  className="join-item btn"
-                  style={{
-                    fontSize: "1.5rem",
-                    backgroundColor: "#F2CB05",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => {
-                    events.slice(page * 8 - 8, page * 8).length > 0 &&
-                      setPage(page + 1);
-                  }}
-                >
-                  »
-                </button>
+              <div
+                className="flex justify-center content-center p-5"
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  padding: "1.25rem",
+                }}
+              >
+                <div className="join" data-theme="corporate">
+                  <button
+                    className="join-item btn"
+                    style={{
+                      fontSize: "1.5rem",
+                      backgroundColor: "#F2CB05",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => {
+                      page > 1 && setPage(page - 1);
+                    }}
+                  >
+                    «
+                  </button>
+                  <button
+                    className="join-item btn"
+                    style={{
+                      fontSize: "1rem",
+                      margin: "0 0.5rem",
+                      backgroundColor: "#F2CB05",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Página {page}
+                  </button>
+                  <button
+                    className="join-item btn"
+                    style={{
+                      fontSize: "1.5rem",
+                      backgroundColor: "#F2CB05",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => {
+                      events.slice(page * 8 - 8, page * 8).length > 0 &&
+                        setPage(page + 1);
+                    }}
+                  >
+                    »
+                  </button>
+                </div>
               </div>
             </div>
           </div>

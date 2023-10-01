@@ -7,10 +7,8 @@ import Contact from "../components/inicio/contact";
 import Events from "../components/inicio/events";
 import Register from "../components/inicio/register";
 import Index from "../components/inicio";
-<<<<<<< HEAD
 import EventsAdminView from "../components/events/EventsAdminView";
 import EventsForm from '../components/events/EventsForm'
-=======
 import Comments from "../components/comments/comments";
 
 const isAuthenticated = () => {
@@ -20,7 +18,6 @@ const isAuthenticated = () => {
 
 const inactivityTimeout = 60000;
 let inactivityTimer;
->>>>>>> 84a41f7a01b69530777e299727ea9596d6551eda
 
 const RoutesApp = () => {
   const [shouldRedirect, setShouldRedirect] = useState(false);
@@ -70,13 +67,11 @@ const RoutesApp = () => {
       />
       <Route path={"/entrepreneurship"} element={<Entrepreneurship />} />
       <Route path={"/events"} element={<Events />} />
-<<<<<<< HEAD
       <Route path={"/contact"} element={<Contact />} />
       <Route path={"/register"} element={<Register />} />
       <Route path={"/entrepreneurship-register"} element={<EntrepreneurshipForm />} />
       <Route path={"/events-admin"} element={<EventsAdminView />} ></Route>
       <Route path={"/events-register"} element={<EventsForm />} ></Route>
-=======
       <Route
         path={"/contact"}
         element={
@@ -111,7 +106,6 @@ const RoutesApp = () => {
         path={"/comments"}
         element={!isAuthenticated() ? <Navigate to="/login" /> : <Comments />}
       />
->>>>>>> 84a41f7a01b69530777e299727ea9596d6551eda
     </Routes>
   );
 };
