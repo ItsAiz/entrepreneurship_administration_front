@@ -7,6 +7,8 @@ import Contact from "../components/inicio/contact";
 import Events from "../components/inicio/events";
 import Register from "../components/inicio/register";
 import Index from "../components/inicio";
+import EventsAdminView from "../components/events/EventsAdminView";
+import EventsForm from '../components/events/EventsForm'
 import Comments from "../components/comments/comments";
 
 const isAuthenticated = () => {
@@ -65,6 +67,11 @@ const RoutesApp = () => {
       />
       <Route path={"/entrepreneurship"} element={<Entrepreneurship />} />
       <Route path={"/events"} element={<Events />} />
+      <Route path={"/contact"} element={<Contact />} />
+      <Route path={"/register"} element={<Register />} />
+      <Route path={"/entrepreneurship-register"} element={<EntrepreneurshipForm />} />
+      <Route path={"/events-admin"} element={<EventsAdminView />} ></Route>
+      <Route path={"/events-register"} element={<EventsForm />} ></Route>
       <Route
         path={"/contact"}
         element={

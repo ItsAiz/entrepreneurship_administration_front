@@ -20,7 +20,7 @@ export default function GroupDemo() {
         {
           label: "Eventos de emprendimientos",
           icon: "pi pi-calendar",
-          url: "/entrepreneurship",
+          url: "/events-admin",
         },
         {
           label: "Comentarios de la página",
