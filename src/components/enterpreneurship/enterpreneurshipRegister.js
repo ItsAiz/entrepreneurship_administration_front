@@ -22,9 +22,13 @@ const EnterpreneurshipForm = ({ initialEntrepreneurshipData, isEditing }) => {
   const [entrepreneurshipData, setEntrepreneurshipData] = useState(
     initialEntrepreneurshipData || {}
   );
-  const [selectedFile, setSelectedFile] = useState([]);
+  const [selectedFile, setSelectedFile] = useState(null);
   const [selectedFileName, setSelectedFileName] = useState('');
   const toast = useRef(null);
+  const rol = localStorage.getItem("userRole");
+  const studentDocument = localStorage.getItem("userDocument");
+  const [rolStudent, setRolStudent] = useState(false);
+  const [fileUploadKey, setFileUploadKey] = useState(0);
 
   const showSticky = (notificationData) => {
     toast.current.show({
@@ -36,10 +40,18 @@ const EnterpreneurshipForm = ({ initialEntrepreneurshipData, isEditing }) => {
   };
 
   useEffect(() => {
-    if (isEditing && entrepreneurshipData?.business_plan_name) {
-        setSelectedFileName(entrepreneurshipData.business_plan_name);
-    } 
-  }, [entrepreneurshipData, isEditing]);
+    if(rol === 'Estudiante') setRolStudent(true);
+  }, [rol])
+
+  useEffect(() => {
+    if(rolStudent) setStep(2)
+  }, [rolStudent])
+
+  useEffect(() => {
+    if (isEditing && entrepreneurshipData?.business_plan_name && !rolStudent) {
+      setSelectedFileName(entrepreneurshipData.business_plan_name);
+    }
+  }, [entrepreneurshipData, isEditing, rolStudent]);
   
 
   const onNextStep = () => {
@@ -113,11 +125,45 @@ const EnterpreneurshipForm = ({ initialEntrepreneurshipData, isEditing }) => {
     return emailRegex.test(email);
   };
 
+  const formatData = () => {
+    const {
+      business_plan,
+      category,
+      name,
+      physical_point,
+      physical_resources,
+      plan_status,
+      technological_resources,
+    } = entrepreneurshipData;
+  
+    const formData = new FormData();
+    formData.append('business_plan', business_plan);
+    formData.append('category', category);
+    formData.append('data_status', false);
+    formData.append('name', name);
+    formData.append('physical_point', physical_point);
+    formData.append('physical_resources', JSON.stringify(physical_resources));
+    formData.append('plan_status', plan_status);
+    formData.append(
+      'technological_resources',
+      JSON.stringify(technological_resources)
+    );
+  
+    if (!rolStudent) {
+      formData.append('id_user', JSON.stringify(entrepreneurshipData.id_user));
+    } else {
+      formData.append('id_user', studentDocument);
+    }
+  
+    return formData;
+  };
+
   const handleUpdateEnterpreneurship = async () => {
     if (
       !isGeneralDataValid() ||
       !entrepreneurshipData.business_plan ||
       entrepreneurshipData.business_plan == null
+      || (rolStudent && !studentDocument)
     ) {
       showSticky({
         severity: "warn",
@@ -125,7 +171,7 @@ const EnterpreneurshipForm = ({ initialEntrepreneurshipData, isEditing }) => {
         detail: "Los campos deben estar completos",
       });
     }
-    await EnterpreneurshipApi.updateEnterpreneurship(entrepreneurshipData)
+    await EnterpreneurshipApi.updateEnterpreneurship(entrepreneurshipData._id, formatData())
       .then((resp) => {
         showSticky({
           severity: "success",
@@ -155,11 +201,8 @@ const EnterpreneurshipForm = ({ initialEntrepreneurshipData, isEditing }) => {
       });
       return;
     }
-    const enterpreneurshipDataFinal = {
-      ...entrepreneurshipData,
-      data_status: false,
-    };
-    await EnterpreneurshipApi.createEnterpreneurship(enterpreneurshipDataFinal)
+    if(!rolStudent){
+      await EnterpreneurshipApi.createEnterpreneurship(formatData())
       .then((resp) => {
         showSticky({
           severity: "success",
@@ -174,6 +217,23 @@ const EnterpreneurshipForm = ({ initialEntrepreneurshipData, isEditing }) => {
           detail: "Hubo un error en la solicitud: " + error.message,
         });
       });
+    } else {
+      await EnterpreneurshipApi.createEnterpreneurshipByUser(formatData())
+      .then((resp) => {
+        showSticky({
+          severity: "success",
+          summary: "Success",
+          detail: resp.state,
+        });
+      })
+      .catch((error) => {
+        showSticky({
+          severity: "error",
+          summary: "Error",
+          detail: "Hubo un error en la solicitud: " + error.message,
+        });
+      });
+    }
   };
 
   const handleFileRemove = () => {
@@ -181,12 +241,19 @@ const EnterpreneurshipForm = ({ initialEntrepreneurshipData, isEditing }) => {
       ...entrepreneurshipData,
       business_plan: null,
     });
+    setSelectedFile([]);
+    setSelectedFileName('');
+    setFileUploadKey(fileUploadKey + 1);
   };
 
   const onXlsFileUpload = ({ files }) => {
     const [file] = files;
     const fileNoName = file.slice(0, file.size);
-    const newFile = new File([fileNoName], `${entrepreneurshipData.id_user.documentId}.xlsx`);
+    const document = rolStudent ? studentDocument : entrepreneurshipData?.id_user.documentId;
+    if (rolStudent) {
+      setSelectedFileName(studentDocument);
+    }
+    const newFile = new File([fileNoName], `${ document }.xlsx`);
     setSelectedFile(file);
     setEntrepreneurshipData({
       ...entrepreneurshipData,
@@ -554,6 +621,7 @@ const EnterpreneurshipForm = ({ initialEntrepreneurshipData, isEditing }) => {
                     label="Anterior"
                     icon="pi pi-chevron-left"
                     onClick={() => setStep(step - 1)}
+                    disabled={rolStudent && step === 2}
                   />
                   <Button
                     label="Siguiente"
@@ -570,6 +638,7 @@ const EnterpreneurshipForm = ({ initialEntrepreneurshipData, isEditing }) => {
                 <div className="row">
                   <div className="col s12">
                     <FileUpload
+                      key={fileUploadKey}
                       mode="basic"
                       chooseLabel="Seleccionar archivo"
                       uploadLabel="Subir"
@@ -580,10 +649,10 @@ const EnterpreneurshipForm = ({ initialEntrepreneurshipData, isEditing }) => {
                       display={"block"}
                       auto={true}
                     />
-                    {(entrepreneurshipData.business_plan || selectedFileName) && (
+                    {(entrepreneurshipData?.business_plan != null || selectedFileName) && (
                       <div>
                         <label>
-                          Archivo seleccionado : {selectedFile?.length
+                          Archivo seleccionado : {selectedFile != null
                                                 ? selectedFile.name
                                                 : selectedFileName}
                         </label>

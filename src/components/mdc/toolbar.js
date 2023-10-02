@@ -48,7 +48,7 @@ const Toolbar = () => {
     showSticky({
       severity: "info",
       summary: "Cerrando sesión",
-      detail: "Se estrá",
+      detail: "Vuelva pronto!!",
     });
     window.location.href = "/login";
   };

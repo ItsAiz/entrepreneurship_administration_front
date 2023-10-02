@@ -12,9 +12,11 @@ const EnterpreneurshipManangement = () => {
   const [enterpreneurships, setEnterpreneurships] = useState([]);
   const [editingData, setEditingData] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [userName, setUserName] = useState('');
+  const [userId, setUserId] = useState('');
+  const [rol, setRol] = useState('');
   const toast = useRef(null);
   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-  const rol = localStorage.getItem("userRole");
 
   const showSticky = (notificationData) => {
     toast.current.show({
@@ -26,21 +28,45 @@ const EnterpreneurshipManangement = () => {
   };
 
   useEffect(() => {
-    const fetchEnterpreneurs = async () => {
-      try {
-        const resp = await EnterpreneurshipApi.getEnterpreneurships();
-        setEnterpreneurships(resp.data);
-      } catch (error) {
-        showSticky({
-          severity: "error",
-          summary: "Error",
-          detail: "Hubo un error en la solicitud: " + error.message,
-        });
-      }
-    };
-    fetchEnterpreneurs();
+    setUserName(localStorage.getItem("userName"));
+    setUserId(localStorage.getItem('userId'));
+    setRol(localStorage.getItem('userRole'))
   }, []);
 
+  useEffect(() => {
+    if (userName !== '' && rol !== '' && userId !== '') {
+      const fetchData = () => {
+        if (userName && rol === 'Estudiante') {
+          EnterpreneurshipApi.getEnterpreneurshipsByUser(userId)
+            .then((resp) => {
+              setEnterpreneurships(resp.data);
+            })
+            .catch((err) => {
+              showSticky({
+                severity: "error",
+                summary: "Error",
+                detail: "Problema al intentar obtener los emprendimientos: " + err.message,
+              });
+            });
+        } else {
+          EnterpreneurshipApi.getEnterpreneurships()
+            .then((resp) => {
+              setEnterpreneurships(resp.data);
+            })
+            .catch((error) => {
+              showSticky({
+                severity: "error",
+                summary: "Error",
+                detail: "Hubo un error en la solicitud: " + error.message,
+              });
+            });
+        }
+      };
+    
+      fetchData();
+    }
+  }, [userName, rol, userId]);
+  
   const handleEdit = (enterpreneurshipData) => {
     setEditingData(enterpreneurshipData);
     setIsModalOpen(true);
@@ -103,7 +129,7 @@ const EnterpreneurshipManangement = () => {
               <Column field={"name"} header={"Nombre"} />
               <Column field={"id_user.name"} header={"Cantidad"} />
               <Column field={"plan_status"} header={"Estado"} />
-              {rol === "Administrador" && isLoggedIn ? (
+              {(rol === 'Administrador' || rol === 'Estudiante') && isLoggedIn ? (
                 <Column
                   body={renderActions}
                   header={"Acciones"}
