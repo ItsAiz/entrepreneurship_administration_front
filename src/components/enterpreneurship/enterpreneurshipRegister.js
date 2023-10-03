@@ -26,7 +26,9 @@ const EnterpreneurshipForm = ({ initialEntrepreneurshipData, isEditing }) => {
   const [selectedFileName, setSelectedFileName] = useState('');
   const toast = useRef(null);
   const rol = localStorage.getItem("userRole");
-  const studentDocument = localStorage.getItem("userDocument");
+  const userEmail = localStorage.getItem("userName");
+  const userDocument = localStorage.getItem("userDocument")
+  const userId = localStorage.getItem("userId");
   const [rolStudent, setRolStudent] = useState(false);
   const [fileUploadKey, setFileUploadKey] = useState(0);
 
@@ -152,9 +154,10 @@ const EnterpreneurshipForm = ({ initialEntrepreneurshipData, isEditing }) => {
     if (!rolStudent) {
       formData.append('id_user', JSON.stringify(entrepreneurshipData.id_user));
     } else {
-      formData.append('id_user', studentDocument);
+      formData.append('user', userEmail);
     }
-  
+    if(isEditing && rolStudent) formData.append('id_user', userId);
+    console.log(formData)
     return formData;
   };
 
@@ -163,7 +166,7 @@ const EnterpreneurshipForm = ({ initialEntrepreneurshipData, isEditing }) => {
       !isGeneralDataValid() ||
       !entrepreneurshipData.business_plan ||
       entrepreneurshipData.business_plan == null
-      || (rolStudent && !studentDocument)
+      || (rolStudent && !userEmail)
     ) {
       showSticky({
         severity: "warn",
@@ -171,7 +174,8 @@ const EnterpreneurshipForm = ({ initialEntrepreneurshipData, isEditing }) => {
         detail: "Los campos deben estar completos",
       });
     }
-    await EnterpreneurshipApi.updateEnterpreneurship(entrepreneurshipData._id, formatData())
+    if(!rolStudent){
+      await EnterpreneurshipApi.updateEnterpreneurship(entrepreneurshipData._id, formatData())
       .then((resp) => {
         showSticky({
           severity: "success",
@@ -186,6 +190,23 @@ const EnterpreneurshipForm = ({ initialEntrepreneurshipData, isEditing }) => {
           detail: "Hubo un error en la solicitud: " + error.message,
         });
       });
+    } else {
+      await EnterpreneurshipApi.updateEnterpreneurshipByUser(entrepreneurshipData._id, formatData())
+      .then((resp) => {
+        showSticky({
+          severity: "success",
+          summary: "Success",
+          detail: resp.state,
+        });
+      })
+      .catch((error) => {
+        showSticky({
+          severity: "error",
+          summary: "Error",
+          detail: "Hubo un error en la solicitud: " + error.message,
+        });
+      });
+    }
   };
 
   const handleCreateEnterpreneurship = async () => {
@@ -249,9 +270,9 @@ const EnterpreneurshipForm = ({ initialEntrepreneurshipData, isEditing }) => {
   const onXlsFileUpload = ({ files }) => {
     const [file] = files;
     const fileNoName = file.slice(0, file.size);
-    const document = rolStudent ? studentDocument : entrepreneurshipData?.id_user.documentId;
+    const document = rolStudent ? userDocument : entrepreneurshipData?.id_user.documentId;
     if (rolStudent) {
-      setSelectedFileName(studentDocument);
+      setSelectedFileName(file.name);
     }
     const newFile = new File([fileNoName], `${ document }.xlsx`);
     setSelectedFile(file);

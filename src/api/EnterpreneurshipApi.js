@@ -19,6 +19,13 @@ export default class EnterpreneurshipApi{
         .catch(escalateError);
     }
 
+    static async updateEnterpreneurshipByUser(enterpreneurId, formData){
+        console.log(formData);
+        return await api.put(`empre/updateForUser/${enterpreneurId}`, formData)
+        .then(getResponseData)
+        .catch(escalateError);
+    }
+
     static async deleteEnterpreneurship(enterpreneurshipId){
         return await api.delete(`empre/${enterpreneurshipId}`)
         .then(getResponseData)
@@ -42,8 +49,8 @@ export default class EnterpreneurshipApi{
         .catch(escalateError);
     }
 
-    static async getEnterpreneurshipsByUser(userId){
-        return api.get(`empre/${userId}` )
+    static async getEnterpreneurshipsByUser(userEmail){
+        return api.get(`empre/findByUser/${userEmail}` )
         .then(getResponseData)
         .catch(escalateError);
     }

@@ -13,7 +13,6 @@ const EnterpreneurshipManangement = () => {
   const [editingData, setEditingData] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userName, setUserName] = useState('');
-  const [userId, setUserId] = useState('');
   const [rol, setRol] = useState('');
   const toast = useRef(null);
   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
@@ -29,15 +28,14 @@ const EnterpreneurshipManangement = () => {
 
   useEffect(() => {
     setUserName(localStorage.getItem("userName"));
-    setUserId(localStorage.getItem('userId'));
     setRol(localStorage.getItem('userRole'))
   }, []);
 
   useEffect(() => {
-    if (userName !== '' && rol !== '' && userId !== '') {
+    if (userName !== '' && rol !== '') {
       const fetchData = () => {
         if (userName && rol === 'Estudiante') {
-          EnterpreneurshipApi.getEnterpreneurshipsByUser(userId)
+          EnterpreneurshipApi.getEnterpreneurshipsByUser(userName)
             .then((resp) => {
               setEnterpreneurships(resp.data);
             })
@@ -65,7 +63,7 @@ const EnterpreneurshipManangement = () => {
     
       fetchData();
     }
-  }, [userName, rol, userId]);
+  }, [userName, rol]);
   
   const handleEdit = (enterpreneurshipData) => {
     setEditingData(enterpreneurshipData);
