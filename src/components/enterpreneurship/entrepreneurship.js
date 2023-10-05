@@ -124,8 +124,8 @@ const EnterpreneurshipManangement = () => {
           {Array.isArray(enterpreneurships) && enterpreneurships.length > 0 ? (
             <DataTable value={enterpreneurships} className="p-datatable-lg">
               <Column field={"category"} header={"Categoría"} />
-              <Column field={"name"} header={"Nombre"} />
-              <Column field={"id_user.name"} header={"Cantidad"} />
+              <Column field={"name"} header={"Nombre Emprendimiento"} />
+              <Column field={"id_user.name"} header={"Nombre estudiante"} />
               <Column field={"plan_status"} header={"Estado"} />
               {(rol === 'Administrador' || rol === 'Estudiante') && isLoggedIn ? (
                 <Column
