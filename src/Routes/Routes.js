@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Routes, Route, Navigate, Link } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "../components/inicio/login";
 import Entrepreneurship from "../components/enterpreneurship/entrepreneurship";
 import EntrepreneurshipForm from "../components/enterpreneurship/enterpreneurshipRegister";
@@ -27,6 +27,10 @@ const RoutesApp = () => {
     setShouldRedirect(true);
   };
 
+  useEffect(() => {
+    if (shouldRedirect) window.location.href = "/login";
+  }, [shouldRedirect]);
+
   const resetInactivityTimer = () => {
     clearTimeout(inactivityTimer);
     inactivityTimer = setTimeout(logout, inactivityTimeout);
@@ -47,10 +51,6 @@ const RoutesApp = () => {
       clearTimeout(inactivityTimer);
     };
   });
-
-  if (shouldRedirect) {
-    return <Link to="/" />;
-  }
 
   return (
     <Routes>

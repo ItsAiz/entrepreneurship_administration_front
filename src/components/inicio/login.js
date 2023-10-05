@@ -56,6 +56,9 @@ export default function Login() {
       .then((resp) => {
         localStorage.setItem("userRole", resp.data.rol);
         localStorage.setItem("isLoggedIn", true);
+        localStorage.setItem("userName", resp.data.user)
+        localStorage.setItem("userId", resp.data.id_user)
+        localStorage.setItem("userDocument", resp.data.document)
         showSticky({
           severity: "success",
           summary: "Success",
